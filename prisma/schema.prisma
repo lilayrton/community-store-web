@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Models ---
+
+model User {
+  id        String   @id @default(cuid())
+  email     String?  @unique
+  username  String?  @unique
+  password  String
+  name      String?
+  role      String   @default("CUSTOMER") // "ADMIN" or "CUSTOMER"
+  address   String?
+  phone     String?
+  isActive  Boolean  @default(true)
+  assignedStore String @default("alsina") // "alsina" or "malabia"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Decimal
+  image       String?
+  category    String
+  format      String?  // Visual label: "Display x20 uni"
+  packageType String?  // Logic: "Display", "Fraccion", "Unidad", "Caja", "Bolsa"
+  packageQuantity Int? @default(1) // Logic: 20, 6, 1
+  unitPrice   Decimal? // Visual/Logic: $1900 c/u
+  stock       Int      @default(0)
+  isStockTracked Boolean @default(false)
+  isArchived  Boolean  @default(false)
+  provider    String?  // Optional supplier group for Catalog Editor
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  items       OrderItem[]
+}
+
+model Order {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  status    String   @default("PENDING") // PENDING, PREPARING, READY, COMPLETED, CANCELLED
+  total     Decimal
+  
+  // Relations
+  userId    String?  // Optional for now (guest checkout support)
+  user      User?    @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+  store     String   @default("alsina") // "alsina" or "malabia"
+  
+  // Dynamic Cycle Relation
+  cycleId   String?
+  cycle     CommunityCycle? @relation(fields: [cycleId], references: [id])
+}
+
+model CommunityCycle {
+  id        String   @id @default(cuid())
+  name      String   // e.g. "Ciclo #14"
+  createdAt DateTime @default(now())
+  startDate DateTime // when it was opened
+  endDate   DateTime? // when it was closed
+  status    String   @default("OPEN") // "OPEN", "CLOSED"
+  orders    Order[]
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Decimal // Snapshot of price at purchase
+}
+
+model StockLog {
+  id        String   @id @default(cuid())
+  productId String
+  productName String
+  oldStock  Int
+  newStock  Int
+  change    Int      // +5, -2, etc.
+  referenceId String?  // Optional: Order ID or other reference
+  userId    String?  // Who made the change (optional for now)
+  username  String?  // Visual identifier "Admin", "Juan", etc.
+  createdAt DateTime @default(now())
+}
