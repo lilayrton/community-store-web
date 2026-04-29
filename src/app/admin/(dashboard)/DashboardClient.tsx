@@ -95,13 +95,53 @@ const generateDuplicates = (): DuplicateOrder[] => {
 
 const MOCK_DATA = {
     "alsina": {
-        topCustomers: generateCustomers(15, 5),
-        inactiveCustomers: generateInactive(12),
-        duplicateOrders: generateDuplicates()
+        topCustomers: [
+            { id: "c1", name: "Graciela Fernández", totalOrders: 14, totalSpent: 9240000, lastOrderDate: "2026-04-28" },
+            { id: "c2", name: "Roberto Sánchez", totalOrders: 11, totalSpent: 7150000, lastOrderDate: "2026-04-27" },
+            { id: "c3", name: "María José Peralta", totalOrders: 10, totalSpent: 6800000, lastOrderDate: "2026-04-28" },
+            { id: "c4", name: "Jorge Domínguez", totalOrders: 9, totalSpent: 5940000, lastOrderDate: "2026-04-26" },
+            { id: "c5", name: "Claudia Romero", totalOrders: 8, totalSpent: 5200000, lastOrderDate: "2026-04-25" },
+            { id: "c6", name: "Daniel Herrera", totalOrders: 7, totalSpent: 4620000, lastOrderDate: "2026-04-24" },
+            { id: "c7", name: "Susana Gómez", totalOrders: 7, totalSpent: 4410000, lastOrderDate: "2026-04-23" },
+            { id: "c8", name: "Carlos Méndez", totalOrders: 6, totalSpent: 3780000, lastOrderDate: "2026-04-22" },
+            { id: "c9", name: "Valeria Torres", totalOrders: 5, totalSpent: 3250000, lastOrderDate: "2026-04-21" },
+            { id: "c10", name: "Pablo Acosta", totalOrders: 5, totalSpent: 3100000, lastOrderDate: "2026-04-20" },
+        ],
+        inactiveCustomers: [
+            { id: "i1", name: "Nora Villalba", phone: "+54 9 11 3421-8876" },
+            { id: "i2", name: "Gustavo Paredes", phone: "+54 9 11 2289-4432" },
+            { id: "i3", name: "Lorena Castillo", phone: "+54 9 11 5567-3310" },
+            { id: "i4", name: "Marcelo Ríos", phone: "+54 9 11 4430-9921" },
+            { id: "i5", name: "Patricia Nuñez", phone: "+54 9 11 6612-7745" },
+            { id: "i6", name: "Héctor Vidal", phone: "+54 9 11 3398-2200" },
+            { id: "i7", name: "Silvia Morales", phone: "+54 9 11 7723-5589" },
+            { id: "i8", name: "Ramón Contreras", phone: "+54 9 11 1145-6634" },
+        ],
+        duplicateOrders: [
+            { id: "dup-1a", customerName: "Graciela Fernández", value: 620000, time: "09:14" },
+            { id: "dup-1b", customerName: "Graciela Fernández", value: 620000, time: "09:16" },
+            { id: "dup-2a", customerName: "Jorge Domínguez", value: 890000, time: "11:42" },
+            { id: "dup-2b", customerName: "Jorge Domínguez", value: 890000, time: "11:43" },
+        ]
     },
     "malabia": {
-        topCustomers: generateCustomers(15, 1),
-        inactiveCustomers: generateInactive(8),
+        topCustomers: [
+            { id: "m1", name: "Ana Belén Quiroga", totalOrders: 12, totalSpent: 7680000, lastOrderDate: "2026-04-28" },
+            { id: "m2", name: "Fernando Salinas", totalOrders: 10, totalSpent: 6500000, lastOrderDate: "2026-04-27" },
+            { id: "m3", name: "Marcela Ibáñez", totalOrders: 9, totalSpent: 5850000, lastOrderDate: "2026-04-26" },
+            { id: "m4", name: "Oscar Delgado", totalOrders: 8, totalSpent: 5120000, lastOrderDate: "2026-04-25" },
+            { id: "m5", name: "Roxana Medina", totalOrders: 7, totalSpent: 4410000, lastOrderDate: "2026-04-24" },
+            { id: "m6", name: "Sebastián Arias", totalOrders: 6, totalSpent: 3780000, lastOrderDate: "2026-04-23" },
+            { id: "m7", name: "Mirta Suárez", totalOrders: 6, totalSpent: 3600000, lastOrderDate: "2026-04-22" },
+            { id: "m8", name: "Diego Fuentes", totalOrders: 5, totalSpent: 2950000, lastOrderDate: "2026-04-21" },
+        ],
+        inactiveCustomers: [
+            { id: "im1", name: "Beatriz Leiva", phone: "+54 9 11 8832-1190" },
+            { id: "im2", name: "Nicolás Ponce", phone: "+54 9 11 9921-4478" },
+            { id: "im3", name: "Elena Bogado", phone: "+54 9 11 2234-7765" },
+            { id: "im4", name: "Tomás Bravo", phone: "+54 9 11 6677-3312" },
+            { id: "im5", name: "Celia Aguirre", phone: "+54 9 11 3345-8890" },
+        ],
         duplicateOrders: []
     }
 };
@@ -148,49 +188,99 @@ export default function DashboardClient({ initialStats }: DashboardClientProps) 
         async function fetchStats() {
             try {
                 const data = await getDashboardStats(selectedStore);
-                // MOCK INJECTION START (Requested for visual UI testing)
+                const selectedMock = selectedStore === "alsina" ? {
+                   totalSales: 21480750,
+                   totalOrders: 35,
+                   averageTicket: 613735,
+                   salesByCategory: [
+                     { name: "Almacén", value: 38 },
+                     { name: "Limpieza", value: 24 },
+                     { name: "Perfumería", value: 18 },
+                     { name: "Bebidas", value: 12 },
+                     { name: "Lácteos", value: 8 },
+                   ],
+                   ordersByHour: [
+                     { time: "08:00", orders: 1 },
+                     { time: "10:00", orders: 6 },
+                     { time: "12:00", orders: 11 },
+                     { time: "14:00", orders: 9 },
+                     { time: "16:00", orders: 6 },
+                     { time: "18:00", orders: 2 },
+                   ],
+                   customerRetention: [
+                     { name: "Nuevos", value: 8, fill: "#ec4899" },
+                     { name: "Recurrentes", value: 27, fill: "#2dd4bf" }
+                   ],
+                   topProducts: [
+                     { id: "p1", name: "Aceite Mezcla x 900ml", count: 28 },
+                     { id: "p2", name: "Arroz Largo Fino x 1kg", count: 25 },
+                     { id: "p3", name: "Yerba Mate 1kg", count: 22 },
+                     { id: "p4", name: "Azúcar Molida x 1kg", count: 20 },
+                     { id: "p5", name: "Fideos Spaghetti x 500g", count: 18 },
+                     { id: "p6", name: "Detergente 750ml", count: 16 },
+                     { id: "p7", name: "Leche Entera x 1L", count: 14 },
+                     { id: "p8", name: "Jabón en Polvo 800g", count: 13 },
+                     { id: "p9", name: "Sal Fina x 1kg", count: 11 },
+                     { id: "p10", name: "Puré de Tomate x 520g", count: 9 },
+                   ],
+                   stagnantProducts: [
+                     { id: "s1", name: "Mermelada Durazno x 454g", price: 2890, categoryName: "Almacén" },
+                     { id: "s2", name: "Vinagre de Manzana x 500ml", price: 1750, categoryName: "Almacén" },
+                     { id: "s3", name: "Crema Enjuague x 350ml", price: 4200, categoryName: "Perfumería" },
+                   ],
+                   newCustomers: [
+                     { id: "nc1", name: "Liliana Vega", phone: "11 4423-9871", email: "lilianavega@gmail.com" },
+                     { id: "nc2", name: "Miguel Cabrera", phone: "11 3312-5544", email: "-" },
+                     { id: "nc3", name: "Sandra Paz", phone: "11 5566-7788", email: "sandrapaz@hotmail.com" },
+                     { id: "nc4", name: "Esteban Quiroz", phone: "11 2298-4410", email: "-" },
+                   ],
+                } : {
+                   totalSales: 14320500,
+                   totalOrders: 22,
+                   averageTicket: 651022,
+                   salesByCategory: [
+                     { name: "Almacén", value: 31 },
+                     { name: "Limpieza", value: 20 },
+                     { name: "Bebidas", value: 15 },
+                     { name: "Perfumería", value: 10 },
+                     { name: "Lácteos", value: 6 },
+                   ],
+                   ordersByHour: [
+                     { time: "08:00", orders: 0 },
+                     { time: "10:00", orders: 4 },
+                     { time: "12:00", orders: 8 },
+                     { time: "14:00", orders: 6 },
+                     { time: "16:00", orders: 3 },
+                     { time: "18:00", orders: 1 },
+                   ],
+                   customerRetention: [
+                     { name: "Nuevos", value: 5, fill: "#ec4899" },
+                     { name: "Recurrentes", value: 17, fill: "#2dd4bf" }
+                   ],
+                   topProducts: [
+                     { id: "q1", name: "Aceite Girasol x 1.5L", count: 19 },
+                     { id: "q2", name: "Yerba Mate 500g", count: 17 },
+                     { id: "q3", name: "Leche Entera x 1L", count: 14 },
+                     { id: "q4", name: "Arroz Largo Fino x 1kg", count: 13 },
+                     { id: "q5", name: "Azúcar Molida x 1kg", count: 12 },
+                     { id: "q6", name: "Detergente 750ml", count: 10 },
+                     { id: "q7", name: "Sal Fina x 1kg", count: 8 },
+                   ],
+                   stagnantProducts: [
+                     { id: "qs1", name: "Aceto Balsámico x 250ml", price: 3800, categoryName: "Almacén" },
+                     { id: "qs2", name: "Shampoo Anticaspa x 400ml", price: 5100, categoryName: "Perfumería" },
+                   ],
+                   newCustomers: [
+                     { id: "qnc1", name: "Romina Álvarez", phone: "11 7789-2233", email: "romina@gmail.com" },
+                     { id: "qnc2", name: "Claudio Benítez", phone: "11 4456-8821", email: "-" },
+                   ],
+                };
                 const demoData = {
                   ...data,
-                  salesByCategory: [
-                    { name: "Frutas", value: 400 },
-                    { name: "Verduras", value: 300 },
-                    { name: "Despensa", value: 150 },
-                    { name: "Lácteos", value: 50 },
-                  ],
-                  ordersByHour: [
-                    { time: "08:00", orders: 2 },
-                    { time: "10:00", orders: 15 },
-                    { time: "12:00", orders: 28 },
-                    { time: "14:00", orders: 22 },
-                    { time: "16:00", orders: 18 },
-                    { time: "18:00", orders: 12 },
-                  ],
-                  customerRetention: [
-                    { name: "Nuevos", value: 45, fill: "#ec4899" },
-                    { name: "Recurrentes", value: 85, fill: "#2dd4bf" }
-                  ],
-                  totalSales: 152400.50,
-                  totalOrders: 142,
-                  averageTicket: 1073.24,
+                  ...selectedMock,
                   topCustomers: MOCK_DATA[selectedStore].topCustomers,
                   inactiveCustomers: MOCK_DATA[selectedStore].inactiveCustomers,
                   duplicateOrders: MOCK_DATA[selectedStore].duplicateOrders,
-                  topProducts: [
-                    { id: "1", name: "Banana Ecuador x 1kg", count: 42, categoryName: "Frutas" },
-                    { id: "2", name: "Papa Negra x 1kg", count: 35, categoryName: "Verduras" },
-                    { id: "3", name: "Manzana Roja", count: 28, categoryName: "Frutas" },
-                    { id: "4", name: "Tomate Redondo", count: 25, categoryName: "Verduras" },
-                    { id: "5", name: "Huevo Blanco de Granja", count: 20, categoryName: "Despensa" },
-                  ],
-                  stagnantProducts: [
-                    { id: "s1", name: "Kiwi Gold", price: 3500, categoryName: "Frutas" },
-                    { id: "s2", name: "Aceite de Oliva 500ml", price: 8500, categoryName: "Despensa" }
-                  ],
-                  newCustomers: [
-                    { id: "nc1", name: "Juan Perez", phone: "11 2345-6789", email: "juan@demo.com" },
-                    { id: "nc2", name: "Maria Sosa", phone: "11 6543-2198", email: "maria@test.com" },
-                    { id: "nc3", name: "Carlos Diaz", phone: "11 4455-6677", email: "-" },
-                  ]
                 };
                 setStats(demoData);
                 // MOCK INJECTION END
