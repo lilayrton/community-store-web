@@ -2,6 +2,8 @@ import { getDashboardStats } from "@/actions/get-dashboard-stats";
 import { getActiveCycle, getPastCycles } from "@/actions/admin/cycle-actions";
 import DashboardClient from "./DashboardClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboard() {
     const stats = await getDashboardStats();
     const activeCycle = await getActiveCycle();
