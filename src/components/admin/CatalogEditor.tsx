@@ -714,7 +714,7 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
                                                         <td className="p-4">
                                                             <div className="relative max-w-[120px]">
                                                                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">$</span>
-                                                                <input type="number" value={product.price} onChange={(e) => handlePriceChange(product.id, e.target.value)} className="w-full pl-6 pr-2 py-1.5 rounded border border-zinc-200 dark:border-zinc-700 bg-transparent text-zinc-900 font-bold" />
+                                                                <input type="number" value={product.price} onChange={(e) => handlePriceChange(product.id, e.target.value)} className="w-full pl-6 pr-2 py-1.5 rounded border border-zinc-200 dark:border-zinc-700 bg-transparent text-zinc-900 dark:text-zinc-100 font-bold" />
                                                             </div>
                                                         </td>
                                                         <td className="p-4 text-center">
