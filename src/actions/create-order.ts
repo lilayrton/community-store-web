@@ -23,7 +23,8 @@ export async function getCheckoutProfile() {
         lastName,
         email: user.email || "",
         phone: user.phone || "",
-        address: user.address || ""
+        address: user.address || "",
+        isAdmin: user.role === 'ADMIN'
     };
 }
 
@@ -41,6 +42,7 @@ type CustomerInfo = {
     address: string;
     deliveryMethod: string;
     store: string;
+    targetCycleId?: string;
 };
 
 export async function createOrder(cart: CartItem[], customer: CustomerInfo) {
@@ -50,9 +52,28 @@ export async function createOrder(cart: CartItem[], customer: CustomerInfo) {
         return { success: false, error: "El carrito está vacío" };
     }
 
+    const sessionUser = await getCurrentUser();
+    const isAdmin = sessionUser?.role === 'ADMIN';
+
     try {
         // 1. Transaction to ensure integrity
         const result = await prisma.$transaction(async (tx) => {
+            
+            // Validate Cycle (Admin Override or Open Cycle)
+            let cycleToLink = null;
+            if (isAdmin && customer.targetCycleId) {
+                cycleToLink = await tx.communityCycle.findUnique({
+                    where: { id: customer.targetCycleId }
+                });
+                if (!cycleToLink) throw new Error("El ciclo seleccionado no existe.");
+            } else {
+                cycleToLink = await tx.communityCycle.findFirst({
+                    where: { status: 'OPEN' }
+                });
+                if (!cycleToLink) {
+                    throw new Error("La comunitaria se encuentra cerrada. No se pueden procesar nuevos pedidos en este momento.");
+                }
+            }
 
             // 2. Validate Products & Calculate Total
             let calculatedTotal = 0;
@@ -103,18 +124,13 @@ export async function createOrder(cart: CartItem[], customer: CustomerInfo) {
 
             const finalTotal = customer.deliveryMethod === 'delivery' ? calculatedTotal + 1500 : calculatedTotal;
 
-            // Fetch active cycle to link order
-            const activeCycle = await tx.communityCycle.findFirst({
-                where: { status: 'ACTIVE' }
-            });
-
             // 4. Create Order
             const order = await tx.order.create({
                 data: {
                     userId: user.id,
                     total: finalTotal,
                     status: "PENDING",
-                    cycleId: activeCycle?.id, // Link to active cycle if exists
+                    cycleId: cycleToLink.id, // Link to validated cycle
                     store: customer.store, // Pass the store
                     items: {
                         create: validItems.map(item => ({

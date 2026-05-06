@@ -1,7 +1,6 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { getCurrentCommunityRange } from "@/lib/community-cycle";
 
 export async function getDashboardStats(store?: string) {
     try {
@@ -60,7 +59,53 @@ export async function getDashboardStats(store?: string) {
         });
 
         // 4. Inactive Customers (Sin Comprar)
-        const currentRange = getCurrentCommunityRange();
+        // Get active cycle or latest closed cycle
+        const activeCycle = await prisma.communityCycle.findFirst({
+            where: { status: "OPEN" },
+            orderBy: { createdAt: "desc" }
+        });
+        
+        let cycleFilterWhere: any = {};
+        let cycleEndTime: string | null = null;
+        let cycleStartDate: Date | null = null;
+
+        if (activeCycle) {
+            cycleFilterWhere = {
+                OR: [
+                    { cycleId: activeCycle.id },
+                    { createdAt: { gte: activeCycle.startDate } } // For backward compatibility
+                ]
+            };
+            cycleEndTime = null; // Open cycle doesn't have an end time yet
+            cycleStartDate = activeCycle.startDate;
+        } else {
+            const latestClosed = await prisma.communityCycle.findFirst({
+                where: { status: "CLOSED" },
+                orderBy: { endDate: "desc" }
+            });
+            if (latestClosed) {
+                cycleFilterWhere = {
+                    OR: [
+                        { cycleId: latestClosed.id },
+                        { 
+                            createdAt: { 
+                                gte: latestClosed.startDate,
+                                lte: latestClosed.endDate || new Date()
+                            } 
+                        }
+                    ]
+                };
+                cycleEndTime = latestClosed.endDate?.toISOString() || null;
+                cycleStartDate = latestClosed.startDate;
+            } else {
+                // Fallback to last 7 days if no cycles exist
+                const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+                cycleFilterWhere = {
+                    createdAt: { gte: lastWeek }
+                };
+                cycleStartDate = lastWeek;
+            }
+        }
 
         const userWhere: any = {
             isActive: true,
@@ -82,10 +127,7 @@ export async function getDashboardStats(store?: string) {
 
         const buyingUsers = await prisma.order.findMany({
             where: {
-                createdAt: {
-                    gte: currentRange.start,
-                    lte: currentRange.end
-                },
+                ...cycleFilterWhere,
                 userId: { in: activeUsers.map(u => u.id) }
             },
             select: {
@@ -106,10 +148,7 @@ export async function getDashboardStats(store?: string) {
 
         // 5. Duplicate Orders
         const rangeWhere = {
-            createdAt: {
-                gte: currentRange.start,
-                lte: currentRange.end
-            },
+            ...cycleFilterWhere,
             ...where
         };
 
@@ -138,10 +177,7 @@ export async function getDashboardStats(store?: string) {
             const dupOrders = await prisma.order.findMany({
                 where: {
                     userId: { in: dupUserIds },
-                    createdAt: {
-                        gte: currentRange.start,
-                        lte: currentRange.end
-                    }
+                    ...cycleFilterWhere
                 },
                 include: {
                     user: {
@@ -262,7 +298,7 @@ export async function getDashboardStats(store?: string) {
                 where: {
                     userId: user.id,
                     createdAt: {
-                        lt: currentRange.start
+                        lt: cycleStartDate || new Date()
                     }
                 }
             });
@@ -284,7 +320,7 @@ export async function getDashboardStats(store?: string) {
         }));
 
         // 10. Cycle End Time
-        const cycleEndTime = currentRange.end.toISOString();
+        // cycleEndTime is already set above
 
         // 11. Top Selling Products (Top 10)
         const topProductGroup = await prisma.orderItem.groupBy({

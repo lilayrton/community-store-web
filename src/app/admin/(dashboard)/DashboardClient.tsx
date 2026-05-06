@@ -153,8 +153,10 @@ import { getDashboardStats } from "@/actions/get-dashboard-stats";
 // ... (keep Mock Data & Types) ...
 
 import { deleteOrder } from "@/actions/delete-order";
+import CycleManager from "@/components/admin/CycleManager";
 
 interface DashboardClientProps {
+    activeCycle: any;
     initialStats: {
         totalOrders: number;
         totalSales: number;
@@ -173,7 +175,7 @@ interface DashboardClientProps {
     };
 }
 
-export default function DashboardClient({ initialStats }: DashboardClientProps) {
+export default function DashboardClient({ initialStats, activeCycle }: DashboardClientProps) {
     const [isMounted, setIsMounted] = useState(false);
     const [selectedStore, setSelectedStore] = useState<"alsina" | "malabia">("alsina");
     const [stats, setStats] = useState(initialStats);
@@ -417,6 +419,8 @@ export default function DashboardClient({ initialStats }: DashboardClientProps) 
                     )}
                 </div>
             </div>
+
+            <CycleManager activeCycle={activeCycle} />
 
             {/* Top Row: Key Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -2,8 +2,9 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, MapPin, CreditCard, ShoppingBag, Loader2, CheckCircle, Home, Store, Truck, Info } from "lucide-react";
+import { ArrowLeft, MapPin, CreditCard, ShoppingBag, Loader2, CheckCircle, Home, Store, Truck, Info, ShieldAlert } from "lucide-react";
 import { createOrder, getCheckoutProfile } from "@/actions/create-order";
+import { getActiveCycle, getPastCycles } from "@/actions/admin/cycle-actions";
 
 // --- Types ---
 type CartItem = {
@@ -24,6 +25,10 @@ export default function CheckoutPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [activeCycle, setActiveCycle] = useState<any>(null);
+    const [pastCycles, setPastCycles] = useState<any[]>([]);
+    const [targetCycleId, setTargetCycleId] = useState<string>("");
 
     // Empty initial state
     const [formData, setFormData] = useState({
@@ -54,9 +59,17 @@ export default function CheckoutPage() {
             setDeliveryMethod(savedDelivery);
         }
 
-        // Auto-fill si el usuario está logueado
-        getCheckoutProfile().then(profile => {
+        // Cargar ciclos
+        Promise.all([
+            getActiveCycle(),
+            getPastCycles(5),
+            getCheckoutProfile()
+        ]).then(([active, past, profile]) => {
+            setActiveCycle(active);
+            setPastCycles(past);
+            
             if (profile) {
+                setIsAdmin(profile.isAdmin);
                 setFormData(prev => ({
                     ...prev,
                     firstName: profile.firstName || prev.firstName,
@@ -93,7 +106,8 @@ export default function CheckoutPage() {
         const result = await createOrder(cart, {
             ...formData,
             deliveryMethod,
-            store: slug
+            store: slug,
+            targetCycleId: isAdmin && targetCycleId ? targetCycleId : undefined
         });
 
         if (result.success) {
@@ -110,6 +124,33 @@ export default function CheckoutPage() {
     };
 
     if (!isMounted) return null;
+
+    if (!activeCycle && !isAdmin && !isSuccess) {
+        return (
+            <div className="min-h-screen bg-[#f8f9fa] font-sans p-4 flex items-center justify-center">
+                <div className="max-w-md w-full bg-white p-10 rounded-3xl shadow-xl border border-zinc-200 text-center animate-in fade-in zoom-in duration-300">
+                    <div className="w-24 h-24 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                        <Store className="w-12 h-12" />
+                    </div>
+
+                    <h1 className="text-3xl font-black text-slate-900 mb-3">
+                        Comunitaria Cerrada
+                    </h1>
+                    <p className="text-zinc-600 text-lg mb-8 leading-relaxed">
+                        En este momento no estamos recibiendo nuevos pedidos. ¡Pronto abriremos una nueva comunitaria!
+                    </p>
+
+                    <button
+                        onClick={() => router.push(`/store/${slug}`)}
+                        className="w-full flex items-center justify-center gap-2 py-4 bg-slate-900 text-white rounded-xl font-bold text-lg hover:bg-slate-800 transition-colors shadow-md"
+                    >
+                        <ArrowLeft className="w-5 h-5" />
+                        Volver a la tienda
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     if (isSuccess) {
         return (
@@ -166,17 +207,63 @@ export default function CheckoutPage() {
                         <form id="checkout-form" onSubmit={handleSubmit} className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-zinc-200 space-y-8">
 
                             {/* Instrucciones */}
-                            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-4 shadow-sm">
-                                <div className="bg-blue-100 p-2 rounded-full shrink-0">
-                                    <Info className="w-6 h-6 text-blue-700" />
+                            {isAdmin && !activeCycle ? (
+                                <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-4 shadow-sm">
+                                    <div className="bg-red-100 p-2 rounded-full shrink-0">
+                                        <ShieldAlert className="w-6 h-6 text-red-700" />
+                                    </div>
+                                    <div className="w-full">
+                                        <h3 className="font-bold text-red-900 text-lg">Modo Administrador Activo</h3>
+                                        <p className="text-red-800 mt-1 font-medium leading-relaxed mb-3">
+                                            La comunitaria está CERRADA para el público, pero podés agregar este pedido internamente. Seleccioná a qué ciclo querés asignarlo:
+                                        </p>
+                                        <select 
+                                            value={targetCycleId}
+                                            onChange={(e) => setTargetCycleId(e.target.value)}
+                                            className="w-full bg-white border border-red-200 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5"
+                                        >
+                                            <option value="">Seleccionar ciclo (obligatorio)</option>
+                                            {pastCycles.map(c => (
+                                                <option key={c.id} value={c.id}>{c.name} (Cerrado)</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-bold text-blue-900 text-lg">Último paso</h3>
-                                    <p className="text-blue-800 mt-1 font-medium leading-relaxed">
-                                        Completá tus datos para que podamos preparar tu pedido. Revisa que tu teléfono esté correcto para poder contactarte.
-                                    </p>
+                            ) : isAdmin && activeCycle ? (
+                                <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 flex items-start gap-4 shadow-sm">
+                                    <div className="bg-yellow-100 p-2 rounded-full shrink-0">
+                                        <ShieldAlert className="w-6 h-6 text-yellow-700" />
+                                    </div>
+                                    <div className="w-full">
+                                        <h3 className="font-bold text-yellow-900 text-lg">Modo Administrador Activo</h3>
+                                        <p className="text-yellow-800 mt-1 font-medium leading-relaxed mb-3">
+                                            Podés asignar este pedido al ciclo actual ({activeCycle.name}) o a uno anterior:
+                                        </p>
+                                        <select 
+                                            value={targetCycleId}
+                                            onChange={(e) => setTargetCycleId(e.target.value)}
+                                            className="w-full bg-white border border-yellow-200 text-yellow-900 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block p-2.5"
+                                        >
+                                            <option value="">Ciclo Actual ({activeCycle.name})</option>
+                                            {pastCycles.map(c => (
+                                                <option key={c.id} value={c.id}>{c.name} (Cerrado)</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-4 shadow-sm">
+                                    <div className="bg-blue-100 p-2 rounded-full shrink-0">
+                                        <Info className="w-6 h-6 text-blue-700" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-blue-900 text-lg">Último paso</h3>
+                                        <p className="text-blue-800 mt-1 font-medium leading-relaxed">
+                                            Completá tus datos para que podamos preparar tu pedido. Revisa que tu teléfono esté correcto para poder contactarte.
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Contact Info */}
                             <div>
@@ -369,7 +456,7 @@ export default function CheckoutPage() {
                                     <button
                                         form="checkout-form"
                                         type="submit"
-                                        disabled={isLoading}
+                                        disabled={isLoading || (isAdmin && !activeCycle && !targetCycleId)}
                                         className="w-full py-3.5 sm:py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-black text-lg lg:text-base xl:text-lg shadow-lg shadow-green-600/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                                     >
                                         {isLoading ? (
