@@ -23,6 +23,8 @@ model User {
   phone     String?
   isActive  Boolean  @default(true)
   assignedStore String @default("alsina") // "alsina" or "malabia"
+  oldId     Int?     @unique // Guardamos el ID del sistema viejo por si a futuro migramos el historial de pedidos
+  lastLogin DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Order[]

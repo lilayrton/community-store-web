@@ -2,6 +2,8 @@ import PageHeader from "@/components/admin/PageHeader";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = 'force-dynamic';
+
 export default async function CustomersPage() {
 
     // Fetch customers (users with role CUSTOMER)
@@ -29,6 +31,7 @@ export default async function CustomersPage() {
                         <tr>
                             <th className="px-6 py-4">Nombre</th>
                             <th className="px-6 py-4">Email</th>
+                            <th className="px-6 py-4">Tienda</th>
                             <th className="px-6 py-4">Fecha Reg.</th>
                             <th className="px-6 py-4">Pedidos</th>
                             <th className="px-6 py-4 text-right">Acciones</th>
@@ -37,7 +40,7 @@ export default async function CustomersPage() {
                     <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
                         {customers.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
+                                <td colSpan={6} className="px-6 py-12 text-center text-zinc-500">
                                     No hay clientes registrados.
                                 </td>
                             </tr>
@@ -48,6 +51,17 @@ export default async function CustomersPage() {
                                         {customer.name || "Sin Nombre"}
                                     </td>
                                     <td className="px-6 py-4">{customer.email}</td>
+                                    <td className="px-6 py-4">
+                                        {customer.assignedStore === 'pendiente' ? (
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-200 dark:border-orange-800">
+                                                Pendiente
+                                            </span>
+                                        ) : (
+                                            <span className="capitalize text-zinc-600 dark:text-zinc-400">
+                                                {customer.assignedStore}
+                                            </span>
+                                        )}
+                                    </td>
                                     <td className="px-6 py-4">
                                         {new Date(customer.createdAt).toLocaleDateString()}
                                     </td>
