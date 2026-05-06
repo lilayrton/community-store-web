@@ -157,6 +157,7 @@ import CycleManager from "@/components/admin/CycleManager";
 
 interface DashboardClientProps {
     activeCycle: any;
+    latestClosedCycle?: any;
     initialStats: {
         totalOrders: number;
         totalSales: number;
@@ -175,7 +176,7 @@ interface DashboardClientProps {
     };
 }
 
-export default function DashboardClient({ initialStats, activeCycle }: DashboardClientProps) {
+export default function DashboardClient({ initialStats, activeCycle, latestClosedCycle }: DashboardClientProps) {
     const [isMounted, setIsMounted] = useState(false);
     const [selectedStore, setSelectedStore] = useState<"alsina" | "malabia">("alsina");
     const [stats, setStats] = useState(initialStats);
@@ -420,7 +421,7 @@ export default function DashboardClient({ initialStats, activeCycle }: Dashboard
                 </div>
             </div>
 
-            <CycleManager activeCycle={activeCycle} />
+            <CycleManager activeCycle={activeCycle} latestClosedCycle={latestClosedCycle} />
 
             {/* Top Row: Key Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

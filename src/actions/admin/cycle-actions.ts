@@ -55,6 +55,25 @@ export async function closeCycle(id: string) {
     }
 }
 
+export async function reopenCycle(id: string) {
+    try {
+        await prisma.communityCycle.update({
+            where: { id },
+            data: { 
+                status: "OPEN",
+                endDate: null
+            }
+        });
+
+        revalidatePath("/admin");
+        revalidatePath("/shop");
+        return { success: true };
+    } catch (error) {
+        console.error("Error reopening cycle:", error);
+        return { success: false, error: "Error al reabrir la comunitaria" };
+    }
+}
+
 export async function getActiveCycle() {
     try {
         return await prisma.communityCycle.findFirst({

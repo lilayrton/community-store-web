@@ -1,15 +1,16 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { openCycle, closeCycle } from "@/actions/admin/cycle-actions";
-import { Calendar, Play, Square, Loader2, AlertCircle } from "lucide-react";
+import { openCycle, closeCycle, reopenCycle } from "@/actions/admin/cycle-actions";
+import { Calendar, Play, Square, Loader2, AlertCircle, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface CycleManagerProps {
     activeCycle: any;
+    latestClosedCycle?: any;
 }
 
-export default function CycleManager({ activeCycle }: CycleManagerProps) {
+export default function CycleManager({ activeCycle, latestClosedCycle }: CycleManagerProps) {
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
     const [isCreating, setIsCreating] = useState(false);
@@ -44,6 +45,21 @@ export default function CycleManager({ activeCycle }: CycleManagerProps) {
                 router.refresh();
             } else {
                 setError(result.error || "Error al cerrar");
+            }
+        });
+    };
+
+    const handleReopen = async () => {
+        if (!latestClosedCycle) return;
+        if (!confirm(`¿Estás seguro de reabrir la comunitaria "${latestClosedCycle.name}"?`)) return;
+
+        setError(null);
+        startTransition(async () => {
+            const result = await reopenCycle(latestClosedCycle.id);
+            if (result.success) {
+                router.refresh();
+            } else {
+                setError(result.error || "Error al reabrir");
             }
         });
     };
@@ -127,13 +143,26 @@ export default function CycleManager({ activeCycle }: CycleManagerProps) {
                                 </button>
                             </form>
                         ) : (
-                            <button
-                                onClick={() => setIsCreating(true)}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-medium transition-colors"
-                            >
-                                <Play className="w-4 h-4" fill="currentColor" />
-                                Nueva Comunitaria
-                            </button>
+                            <div className="flex gap-2">
+                                {latestClosedCycle && (
+                                    <button
+                                        onClick={handleReopen}
+                                        disabled={isPending}
+                                        className="flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40 rounded-lg font-medium transition-colors disabled:opacity-50"
+                                        title={`Reabrir ${latestClosedCycle.name}`}
+                                    >
+                                        <RotateCcw className="w-4 h-4" />
+                                        Reabrir Última
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => setIsCreating(true)}
+                                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-medium transition-colors"
+                                >
+                                    <Play className="w-4 h-4" fill="currentColor" />
+                                    Nueva Comunitaria
+                                </button>
+                            </div>
                         )
                     )}
                 </div>
