@@ -345,30 +345,6 @@ export async function publishCatalog(products: CatalogProduct[]) {
         const existingProducts = products.filter(p => !p.id.startsWith("MANUAL-"));
 
         return await prisma.$transaction(async (tx) => {
-            // 0. Handle Cycle Management
-            // Close current open cycle
-            await tx.communityCycle.updateMany({
-                where: { status: 'OPEN' },
-                data: {
-                    status: 'CLOSED',
-                    endDate: new Date()
-                }
-            });
-
-            // Count for name
-            const count = await tx.communityCycle.count();
-            const newCycleName = `Ciclo #${count + 1}`;
-
-            // Create new OPEN cycle
-            const newCycle = await tx.communityCycle.create({
-                data: {
-                    name: newCycleName,
-                    startDate: new Date(),
-                    status: 'OPEN'
-                }
-            });
-
-            console.log(`[Catalog] Started new cycle: ${newCycleName}`);
 
             // 1. First, Archive ALL currently active products.
             // This ensures products removed from the canvas are correctly archived.
@@ -412,7 +388,7 @@ export async function publishCatalog(products: CatalogProduct[]) {
                 });
             }
 
-            return { success: true, count: products.length, cycle: newCycle.name };
+            return { success: true, count: products.length };
         });
 
     } catch (error) {

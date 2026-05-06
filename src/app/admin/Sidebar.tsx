@@ -71,7 +71,7 @@ export default function Sidebar() {
                                     Nuevo
                                 </span>
                                 <div>
-                                    <span className="block font-medium">Creador de Comu</span>
+                                    <span className="block font-medium">Editor de Catálogo</span>
                                     <span className="text-[10px] text-zinc-400 group-hover:text-blue-200 block -mt-0.5">Armar catálogo</span>
                                 </div>
                             </Link>

@@ -461,7 +461,7 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
                     >
                         ←
                     </button>
-                    <h1 className="text-xl md:text-2xl font-black text-zinc-900 dark:text-white tracking-tight flex-1 truncate">Creador de Comunitarias</h1>
+                    <h1 className="text-xl md:text-2xl font-black text-zinc-900 dark:text-white tracking-tight flex-1 truncate">Editor de Catálogo</h1>
                 </div>
 
                 {/* Toolbar */}
@@ -607,7 +607,7 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
 
                         <button onClick={() => onPublish(getSortedProductsToPublish())} className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition-all hover:scale-105 shadow-md shadow-blue-500/20 text-sm">
                             <Save size={16} />
-                            Lanzar 🚀
+                            Guardar Catálogo 🚀
                         </button>
                     </div>
                 </div>

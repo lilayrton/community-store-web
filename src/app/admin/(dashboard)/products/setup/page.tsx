@@ -44,13 +44,13 @@ export default function ProductSetupPage() {
     };
 
     const handlePublish = async (finalProducts: CatalogProduct[]) => {
-        if (!confirm("¿Seguro que querés lanzar la comunitaria con estos precios? Se actualizará la tienda.")) return;
+        if (!confirm("¿Seguro que querés guardar este catálogo? Estos serán los productos disponibles cuando abras una comunitaria.")) return;
 
         setIsPublishing(true);
         try {
             const result = await publishCatalog(finalProducts);
             if (result.success) {
-                alert(`¡Listo! Se creó el ${result.cycle} con ${result.count} productos activos.`);
+                alert(`¡Catálogo actualizado con ${result.count} productos activos! Recordá abrir una Comunitaria desde el Dashboard para empezar a vender.`);
                 setStep("source");
                 // Refresh cycles
                 getRecentCycles().then(setRecentCycles);
@@ -69,9 +69,9 @@ export default function ProductSetupPage() {
         <div className="p-8 max-w-7xl mx-auto">
             {step === "source" && (
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">Creador de Comunitarias</h1>
+                    <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">Editor de Catálogo</h1>
                     <p className="text-zinc-500 dark:text-zinc-400 mt-1">
-                        Paso 1: Usar una plantilla (ciclo anterior) o empezar de cero.
+                        Paso 1: Usar una plantilla (catálogo anterior) o empezar de cero.
                     </p>
                 </div>
             )}
@@ -89,8 +89,8 @@ export default function ProductSetupPage() {
                             <div className="text-sm text-zinc-400 animate-pulse">Cargando historial...</div>
                         ) : recentCycles.length === 0 ? (
                             <div className="p-6 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-center text-zinc-500 mb-6">
-                                <p>No hay ciclos anteriores guardados.</p>
-                                <p className="text-sm mt-1">Lanza tu primera comunitaria para crear una plantilla.</p>
+                                <p>No hay catálogos anteriores guardados.</p>
+                                <p className="text-sm mt-1">Guardá tu primer catálogo para crear una plantilla.</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
