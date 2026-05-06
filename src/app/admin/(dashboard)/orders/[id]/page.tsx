@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import DeleteOrderButton from "@/components/admin/DeleteOrderButton";
 import EditableOrderItems from "@/components/admin/EditableOrderItems";
+import StoreSwitcher from "@/components/admin/StoreSwitcher";
 
 export const dynamic = 'force-dynamic';
 
@@ -93,9 +94,8 @@ export default async function OrderDetailsPage({ params }: { params: { id: strin
                                 {new Date(order.createdAt).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
                             </span>
                         </div>
-                        <div className="flex justify-between">
-                            <span>Tipo:</span>
-                            <span className="font-medium text-zinc-900 dark:text-zinc-200">Delivery / Pickup (TBD)</span>
+                        <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 mt-3">
+                            <StoreSwitcher orderId={order.id} currentStore={order.store} />
                         </div>
                     </div>
                 </div>

@@ -1,0 +1,765 @@
+[
+  {
+    "id": 2,
+    "name": "Ariadna Ferreira",
+    "email": "ariadnamaylen@hotmail.com",
+    "previousGroup": "Default",
+    "phone": "1134010321"
+  },
+  {
+    "id": 3,
+    "name": "nelly nieto",
+    "email": "nnieto272@gmail.com",
+    "previousGroup": "Default",
+    "phone": "1164890321"
+  },
+  {
+    "id": 5,
+    "name": "Pablo Spagna",
+    "email": "pablospag@hotmail.com",
+    "previousGroup": "Default",
+    "phone": "1157347193"
+  },
+  {
+    "id": 29,
+    "name": "Wagner Ferreira de melo",
+    "email": "wagnerfm00@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1158481160"
+  },
+  {
+    "id": 30,
+    "name": "Claudio Brun",
+    "email": "ellimitemaxikiosco@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 31,
+    "name": "Maria lorena Bressan",
+    "email": "lorenabressan@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 32,
+    "name": "Viviana carranza 1997 Vanini",
+    "email": "kioscoco1997@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1153207200"
+  },
+  {
+    "id": 33,
+    "name": "Jimena Luzuriaga",
+    "email": "luzuriagajimena@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 34,
+    "name": "MARISA RAQUEL GARCÍA",
+    "email": "maraquelgarcia@yahoo.com.ar",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 35,
+    "name": "MARCELO DJIBILIAN",
+    "email": "mgdjibilian@yahoo.com.ar",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 36,
+    "name": "Fiorella López",
+    "email": "fioreysayu2005.fl@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "+441140793704"
+  },
+  {
+    "id": 39,
+    "name": "Alicia pereyra soler 4902",
+    "email": "aliciaisabelpereyra16@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 40,
+    "name": "Karin Asato",
+    "email": "karin_asato@outlook.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 42,
+    "name": "Damián lasciar",
+    "email": "el_oregon@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 44,
+    "name": "Laura bompland  2291 Milanese",
+    "email": "lauramilanese78@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 105,
+    "name": "Silvia Galiana",
+    "email": "bettinasbg@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 106,
+    "name": "benjamin jorge Imach",
+    "email": "elpumaimach@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 107,
+    "name": "Gladys Ritter",
+    "email": "gladysritter464@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1157019320"
+  },
+  {
+    "id": 108,
+    "name": "Gabriela sastre",
+    "email": "gabysastre32@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 109,
+    "name": "Matias Gutierrez",
+    "email": "matu1209@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 110,
+    "name": "Carmen Gardel",
+    "email": "camigar@live.com.ar",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 111,
+    "name": "Guillermo Mackeprang",
+    "email": "gmackeprang@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 112,
+    "name": "Fernando Díaz",
+    "email": "kioscontb@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 113,
+    "name": "Juan manuel pitta",
+    "email": "juanmpitta@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 114,
+    "name": "Alejandro castrillon",
+    "email": "alejandrocastrillon565@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 115,
+    "name": "Ariel demarco",
+    "email": "kioscoguemes3202@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 116,
+    "name": "Maritza de la cruz",
+    "email": "cordoba4841@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 117,
+    "name": "Carlos Julio castrillon",
+    "email": "kioscosantafe2789@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 118,
+    "name": "Maria Nardin",
+    "email": "marianardin@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 119,
+    "name": "Ana olivar riobamba 1081",
+    "email": "almacenhe10@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 120,
+    "name": "Pablo Mantinan",
+    "email": "pmantinan2007@yahoo.com.ar",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 121,
+    "name": "DIXHEL ROJAS SANCHEZ",
+    "email": "paladares.ven@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 122,
+    "name": "gustavo aranda",
+    "email": "impresioneskioscosoler@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 123,
+    "name": "Rodrigo nazca Amarilla",
+    "email": "rodrigoamarilla@live.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 124,
+    "name": "Brenda Vazquez",
+    "email": "bceciliavazquez@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 125,
+    "name": "Marcela Noemí Bermúdez",
+    "email": "bermudezmarcelanoemi@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 143,
+    "name": "Diego Juramento",
+    "email": "almirondaniel9@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 145,
+    "name": "Rosa Mercedes Massoni Lichardo",
+    "email": "solyluna3289@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 146,
+    "name": "ALEJANDRO LA PAMPA 2606",
+    "email": "tale302002@yahoo.com.ar",
+    "previousGroup": "Palermo",
+    "phone": "1151649872"
+  },
+  {
+    "id": 147,
+    "name": "MARCELO ESQUIVEL",
+    "email": "rmarceloesquivel@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1144350649"
+  },
+  {
+    "id": 148,
+    "name": "Yesica borges Romanovich",
+    "email": "jesicaromanovich@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 149,
+    "name": "Arturo Ibarra",
+    "email": "ibarradavilaarturo.ar@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 150,
+    "name": "Sindy Hackl",
+    "email": "sindhf09@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 151,
+    "name": "DIEGO CAPO BIANCO",
+    "email": "dcapobianco@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1168235002"
+  },
+  {
+    "id": 198,
+    "name": "ALEJANDRO DAME",
+    "email": "aledame@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1157517866"
+  },
+  {
+    "id": 223,
+    "name": "NICOLAS RICHIERI",
+    "email": "nicolasi.richieri@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1134743422"
+  },
+  {
+    "id": 227,
+    "name": "Graciela Fonseca",
+    "email": "fonsecagraciela31@yahoo.com",
+    "previousGroup": "Palermo",
+    "phone": "1161746391"
+  },
+  {
+    "id": 238,
+    "name": "Yamila Castellucci",
+    "email": "zeus.larrea1002@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 239,
+    "name": "Jorge Viera",
+    "email": "zeuspueyrredon590@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 240,
+    "name": "Ignacio callao Martínez",
+    "email": "zeuskiosco@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 241,
+    "name": "Maria Ponce",
+    "email": "agencialarrea384@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 243,
+    "name": "Beatriz salguero 1821",
+    "email": "beatriz.oviedo@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 262,
+    "name": "pedro acuna figueroa guanuco",
+    "email": "pedrow.guanuco@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1164383514"
+  },
+  {
+    "id": 264,
+    "name": "sebastian gelsumini",
+    "email": "gelsumini0504@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1155069103"
+  },
+  {
+    "id": 274,
+    "name": "gerardo aponte aguilar",
+    "email": "gerardojas2595@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1125003959"
+  },
+  {
+    "id": 277,
+    "name": "leonardo fenza fenza",
+    "email": "dragocaba@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1170019578"
+  },
+  {
+    "id": 280,
+    "name": "Nara Callorda",
+    "email": "kaisenlogistica@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 282,
+    "name": "Jorge  Pino La roca",
+    "email": "pinolarocca1234@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 296,
+    "name": "eduardo erlinda alv thomas 2798",
+    "email": "edumontesinos@outlook.com",
+    "previousGroup": "Palermo",
+    "phone": "1165934045"
+  },
+  {
+    "id": 302,
+    "name": "martin palermo haub",
+    "email": "martinhaub9@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1159969313"
+  },
+  {
+    "id": 310,
+    "name": "mariana juramento cueli",
+    "email": "mariancueli@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1123290221"
+  },
+  {
+    "id": 316,
+    "name": "alejandro martinez",
+    "email": "alejandromartinez25993@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 322,
+    "name": "diego aranguiz",
+    "email": "diego.aranguiz71@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1169402544"
+  },
+  {
+    "id": 326,
+    "name": "dora freire",
+    "email": "doradora22@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1124617718"
+  },
+  {
+    "id": 331,
+    "name": "dahy thames",
+    "email": "locutoriothames2088@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1133631027"
+  },
+  {
+    "id": 334,
+    "name": "daniela unad",
+    "email": "unad2107@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1169650057"
+  },
+  {
+    "id": 337,
+    "name": "Luciana Cramer",
+    "email": "xcramer5822@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1151562609"
+  },
+  {
+    "id": 339,
+    "name": "ezequiel blumenfarb",
+    "email": "ezeblu@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1123285568"
+  },
+  {
+    "id": 340,
+    "name": "hector pedro martini",
+    "email": "hg.martini@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1157024827"
+  },
+  {
+    "id": 343,
+    "name": "Nelson Pajon",
+    "email": "dlinkyo@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1134004617"
+  },
+  {
+    "id": 350,
+    "name": "Eduardo Cerra",
+    "email": "cerra-edu@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 351,
+    "name": "TOMAS MARTINEZ",
+    "email": "zeus.avsantafe@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1164546009"
+  },
+  {
+    "id": 363,
+    "name": "lucas dem",
+    "email": "lucasdem147@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1150575754"
+  },
+  {
+    "id": 378,
+    "name": "pablo santa fe",
+    "email": "laplazaciber@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1157488152"
+  },
+  {
+    "id": 388,
+    "name": "estela guerrero",
+    "email": "estelaguerrero44@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1168447932"
+  },
+  {
+    "id": 390,
+    "name": "SILVIA RODRIGUEZ",
+    "email": "silgrarodriguez.sr@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 393,
+    "name": "MABEL FLORENTIN",
+    "email": "mabeflo905@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1131889205"
+  },
+  {
+    "id": 403,
+    "name": "GUSTAVO BARBIERI",
+    "email": "gustabarbieri@yahoo.com.ar",
+    "previousGroup": "Palermo",
+    "phone": "1168789471"
+  },
+  {
+    "id": 405,
+    "name": "JEINS Ruiz",
+    "email": "jeinsruiz1@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1138814493"
+  },
+  {
+    "id": 407,
+    "name": "ZEUS PUYREDON",
+    "email": "zeuspuey553@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 408,
+    "name": "JIMENA COVICCI",
+    "email": "jimecovi@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": "113492601212"
+  },
+  {
+    "id": 409,
+    "name": "LUZ CALDERON",
+    "email": "luzcalderon3116@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1134653358"
+  },
+  {
+    "id": 411,
+    "name": "PABLO GLAULO",
+    "email": "pabloglaulo@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1154867790"
+  },
+  {
+    "id": 413,
+    "name": "YAMILEYDI SILVA",
+    "email": "yamileydi23@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1123378773"
+  },
+  {
+    "id": 417,
+    "name": "LILIANA las heras 3742",
+    "email": "maxikioscolasheras3742@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1158428031"
+  },
+  {
+    "id": 422,
+    "name": "Martín Cardozo",
+    "email": "cyberxico2016@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1164772559"
+  },
+  {
+    "id": 425,
+    "name": "juan agustin juramento 1951",
+    "email": "kiosco.lodegero@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1164792400"
+  },
+  {
+    "id": 426,
+    "name": "jorge brugnoni",
+    "email": "jorvir@live.com.ar",
+    "previousGroup": "Palermo",
+    "phone": "1155015321"
+  },
+  {
+    "id": 428,
+    "name": "Zeus Beirut",
+    "email": "zeusberuti3099@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 431,
+    "name": "ALDO GONZALES",
+    "email": "miguelato32@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1166128322"
+  },
+  {
+    "id": 433,
+    "name": "YENIS juncal 3047",
+    "email": "yenis.maria.andrews.camargo@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1132671688"
+  },
+  {
+    "id": 435,
+    "name": "Carlos Urrutia",
+    "email": "clurrutiaf@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 436,
+    "name": "FLOR LANDO",
+    "email": "florlando.utn@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1161474532"
+  },
+  {
+    "id": 442,
+    "name": "HERNAN SANTA FE",
+    "email": "luisbohada@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1124803960"
+  },
+  {
+    "id": 451,
+    "name": "Mesita Velazco",
+    "email": "mesitavelazco@gmail.com",
+    "previousGroup": "Default",
+    "phone": null
+  },
+  {
+    "id": 452,
+    "name": "FRANCO BARBIERE",
+    "email": "franco1332@yahoo.com.ar",
+    "previousGroup": "Palermo",
+    "phone": "1124657049"
+  },
+  {
+    "id": 457,
+    "name": "GABRIELA ACOSTA",
+    "email": "paraguay4240@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1133703394"
+  },
+  {
+    "id": 462,
+    "name": "FLORENCIA FRASSO",
+    "email": "kioscofeliu@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 464,
+    "name": "ALEX ECHEVERRIA",
+    "email": "kioscosprals@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1122448317"
+  },
+  {
+    "id": 469,
+    "name": "MIRIAN DUARTE",
+    "email": "mirianduarte.liss@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1132838860"
+  },
+  {
+    "id": 472,
+    "name": "Tomás Zeus callao",
+    "email": "av.callao1465@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 478,
+    "name": "MARISA acuna figueroa 1272",
+    "email": "asatomarisa25@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1160323600"
+  },
+  {
+    "id": 492,
+    "name": "NILDA RUIZ",
+    "email": "nildanoemiruiz08@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1161355325"
+  },
+  {
+    "id": 497,
+    "name": "ZEUS LAS HERAS",
+    "email": "zeuskiosco.lasheras@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 500,
+    "name": "ESTER RAMIREZ DUARTE",
+    "email": "esterramirezduarte@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1160126170"
+  },
+  {
+    "id": 502,
+    "name": "Carlos Oscar bamont",
+    "email": "carlosbamonte@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1162559345"
+  },
+  {
+    "id": 526,
+    "name": "zeus larrea 1069",
+    "email": "zeuslarrea1069@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": null
+  },
+  {
+    "id": 529,
+    "name": "Josefina Myriam",
+    "email": "jofilatorre@gmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1164764398"
+  },
+  {
+    "id": 533,
+    "name": "Marta benitez",
+    "email": "marta_benitez74@hotmail.com",
+    "previousGroup": "Palermo",
+    "phone": "1155026158"
+  }
+]
