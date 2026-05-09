@@ -162,10 +162,6 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
 
     const handleSearchProducts = async (term: string) => {
         setProductSearch(term);
-        if (term.length < 2) {
-            setSearchResults([]);
-            return;
-        }
 
         setIsSearching(true);
         try {
@@ -178,6 +174,12 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
             setIsSearching(false);
         }
     };
+
+    useEffect(() => {
+        if (isAddModalOpen && productSearch === "") {
+            handleSearchProducts("");
+        }
+    }, [isAddModalOpen]);
 
     const handleAddProduct = (product: CatalogProduct) => {
         const targetProvider = activeProviderForNew === 'Sin Asignar' ? null : activeProviderForNew;
@@ -901,7 +903,7 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
                                         </li>
                                     ))}
                                 </ul>
-                            ) : productSearch.length >= 2 ? (
+                            ) : productSearch.length > 0 ? (
                                 <div className="text-center p-12 text-zinc-500 flex flex-col items-center">
                                     <Package size={48} className="text-zinc-300 dark:text-zinc-700 mb-4" />
                                     <p>No hay resultados para "{productSearch}"</p>

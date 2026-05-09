@@ -398,14 +398,12 @@ export async function publishCatalog(products: CatalogProduct[]) {
 }
 
 export async function searchProducts(query: string): Promise<CatalogProduct[]> {
-    if (!query || query.length < 2) return [];
-
     try {
+        const whereClause = query && query.trim().length > 0 ? { name: { contains: query } } : {};
+
         const products = await prisma.product.findMany({
-            where: {
-                name: { contains: query }
-            },
-            take: 10,
+            where: whereClause,
+            take: 100,
             orderBy: { name: 'asc' }
         });
 
