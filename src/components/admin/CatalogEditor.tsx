@@ -926,12 +926,12 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
                         <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
                             <div>
                                 <label className="block text-xs font-bold text-zinc-500 mb-1">Nombre del Producto *</label>
-                                <input type="text" value={manualProduct.name} onChange={e => setManualProduct({ ...manualProduct, name: e.target.value })} placeholder="Ej: Jabón Ala Matic" className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-zinc-950 outline-none" />
+                                <input type="text" value={manualProduct.name} onChange={e => setManualProduct({ ...manualProduct, name: e.target.value })} placeholder="Ej: Jabón Ala Matic" className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none" />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs font-bold text-zinc-500 mb-1">Categoría</label>
-                                    <select value={manualProduct.category} onChange={e => setManualProduct({ ...manualProduct, category: e.target.value })} className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 outline-none">
+                                    <select value={manualProduct.category} onChange={e => setManualProduct({ ...manualProduct, category: e.target.value })} className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 outline-none">
                                         <option value="General">General</option>
                                         <option value="Limpieza">Limpieza</option>
                                         <option value="Almacén">Almacén</option>
@@ -943,26 +943,26 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
                                     <label className="block text-xs font-bold text-zinc-500 mb-1">Precio Venta (Opcional)</label>
                                     <div className="relative">
                                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
-                                        <input type="number" value={manualProduct.price} onChange={e => setManualProduct({ ...manualProduct, price: e.target.value })} className="w-full pl-7 pr-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 outline-none" />
+                                        <input type="number" value={manualProduct.price} onChange={e => setManualProduct({ ...manualProduct, price: e.target.value })} className="w-full pl-7 pr-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none" />
                                     </div>
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4 bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-100 dark:border-zinc-700">
                                 <div>
                                     <label className="block text-xs font-bold text-zinc-500 mb-1">Empaque</label>
-                                    <select value={manualProduct.packageType} onChange={e => setManualProduct({ ...manualProduct, packageType: e.target.value })} className="w-full px-2 py-1.5 border border-zinc-300 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-950 text-sm">
+                                    <select value={manualProduct.packageType} onChange={e => setManualProduct({ ...manualProduct, packageType: e.target.value })} className="w-full px-2 py-1.5 border border-zinc-300 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 text-sm">
                                         <option value="Unidad">Unidad</option><option value="Fraccion">Fracción</option><option value="Display">Display</option><option value="Bolsa">Bolsa</option><option value="Caja">Caja</option><option value="Carton">Cartón</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-zinc-500 mb-1">Cant. por {manualProduct.packageType}</label>
-                                    <input type="number" value={manualProduct.packageQuantity} onChange={e => setManualProduct({ ...manualProduct, packageQuantity: parseInt(e.target.value) || 1 })} className="w-full px-2 py-1.5 border border-zinc-300 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-950 text-sm" />
+                                    <input type="number" value={manualProduct.packageQuantity} onChange={e => setManualProduct({ ...manualProduct, packageQuantity: parseInt(e.target.value) || 1 })} className="w-full px-2 py-1.5 border border-zinc-300 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 text-sm" />
                                 </div>
                             </div>
                             <div className="pt-2">
                                 <label className="block text-xs font-bold text-zinc-500 mb-2">Variantes Rápidas (Opcional)</label>
                                 <div className="flex gap-2">
-                                    <input type="text" value={manualProduct.newVariant} onChange={e => setManualProduct({ ...manualProduct, newVariant: e.target.value })} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddVariant(); } }} placeholder="Ej: Lavanda" className="flex-1 px-3 py-1.5 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 outline-none text-sm" />
+                                    <input type="text" value={manualProduct.newVariant} onChange={e => setManualProduct({ ...manualProduct, newVariant: e.target.value })} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddVariant(); } }} placeholder="Ej: Lavanda" className="flex-1 px-3 py-1.5 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none text-sm" />
                                     <button onClick={handleAddVariant} className="px-3 py-1.5 bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 rounded-lg text-sm font-bold">Añadir</button>
                                 </div>
                                 {manualProduct.variants.length > 0 && (
