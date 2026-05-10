@@ -241,19 +241,6 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
         setManualProduct({ name: "", category: "General", price: "", variants: [], newVariant: "", packageType: "Unidad", packageQuantity: 1 });
     };
 
-    // Draft Logic
-    useEffect(() => {
-        const savedDraft = localStorage.getItem("catalog-editor-draft");
-        if (savedDraft) {
-            try {
-                const parsed = JSON.parse(savedDraft);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    setProducts(parsed);
-                }
-            } catch (e) {}
-        }
-    }, []);
-
     const getSortedProductsToPublish = () => {
         const groups: Record<string, CatalogProduct[]> = {};
         availableProviders.forEach(p => groups[p] = []);
@@ -269,14 +256,32 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
         return sortedKeys.flatMap(k => groups[k]);
     };
 
+    // Draft Logic
+    useEffect(() => {
+        const savedDraft = localStorage.getItem("catalog-editor-draft");
+        if (savedDraft) {
+            try {
+                const parsed = JSON.parse(savedDraft);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    if (window.confirm("Se encontró un progreso no guardado de tu sesión anterior. ¿Deseas restaurarlo?\n\n(Si seleccionas Cancelar, se cargará la plantilla que elegiste y el borrador anterior se borrará).")) {
+                        setProducts(parsed);
+                    } else {
+                        localStorage.removeItem("catalog-editor-draft");
+                    }
+                }
+            } catch (e) {}
+        }
+    }, []);
+
     // Auto-save effect
     useEffect(() => {
-        if (products.length === 0) return;
-        const timeoutId = setTimeout(() => {
-            localStorage.setItem("catalog-editor-draft", JSON.stringify(getSortedProductsToPublish()));
+        const productsToSave = getSortedProductsToPublish();
+        if (productsToSave.length > 0) {
+            localStorage.setItem("catalog-editor-draft", JSON.stringify(productsToSave));
             setLastSaved(new Date());
-        }, 1500); // 1.5s debounce
-        return () => clearTimeout(timeoutId);
+        } else {
+            localStorage.removeItem("catalog-editor-draft");
+        }
     }, [products, availableProviders]);
 
     const handleSaveDraft = () => {

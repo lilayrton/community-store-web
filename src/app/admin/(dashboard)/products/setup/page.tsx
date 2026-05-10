@@ -50,6 +50,7 @@ export default function ProductSetupPage() {
         try {
             const result = await publishCatalog(finalProducts);
             if (result.success) {
+                localStorage.removeItem("catalog-editor-draft");
                 alert(`¡Catálogo actualizado con ${result.count} productos activos! Recordá abrir una Comunitaria desde el Dashboard para empezar a vender.`);
                 setStep("source");
                 // Refresh cycles
