@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { History, CalendarDays, FilePlus, ChevronRight, Loader2, PackageOpen } from "lucide-react";
-import { getProductsFromCycle, publishCatalog, getRecentCycles, getQuinteroProducts, getComu4Products, clearCatalogDraft, CatalogProduct } from "@/actions/admin/catalog-actions";
+import { History, CalendarDays, FilePlus, ChevronRight, Loader2, PackageOpen, Save } from "lucide-react";
+import { getProductsFromCycle, publishCatalog, getRecentCycles, getQuinteroProducts, getComu4Products, clearCatalogDraft, getActiveCatalogProducts, CatalogProduct } from "@/actions/admin/catalog-actions";
 import CatalogEditor from "@/components/admin/CatalogEditor";
 
 type Step = "source" | "editor" | "summary";
-type SourceType = number | "blank" | "quintero" | "comu4";
+type SourceType = number | "blank" | "quintero" | "comu4" | "active";
 
 export default function ProductSetupPage() {
     const [step, setStep] = useState<Step>("source");
@@ -33,6 +33,8 @@ export default function ProductSetupPage() {
                 fetchedProducts = await getQuinteroProducts();
             } else if (source === "comu4") {
                 fetchedProducts = await getComu4Products();
+            } else if (source === "active") {
+                fetchedProducts = await getActiveCatalogProducts();
             } else {
                 fetchedProducts = await getProductsFromCycle(source as number);
             }
@@ -164,6 +166,24 @@ export default function ProductSetupPage() {
                             <div>
                                 <h3 className="font-bold text-zinc-900 dark:text-zinc-50">Importar comu -4.csv</h3>
                                 <p className="text-zinc-500 dark:text-zinc-400 text-sm">Cargar productos de la lista externa</p>
+                            </div>
+                        </button>
+
+                        {/* Option: Edit Current Catalog (Gold Aesthetic) */}
+                        <button
+                            onClick={() => handleSourceSelect("active")}
+                            disabled={loading}
+                            className="p-6 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-2xl text-left hover:shadow-md transition-all flex items-center gap-4 group md:col-span-2"
+                        >
+                            <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50">
+                                <Save size={20} />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-amber-900 dark:text-amber-50 flex items-center gap-2">
+                                    Editar Catálogo Actual
+                                    <span className="px-2 py-0.5 bg-amber-200 dark:bg-amber-800/50 text-[10px] uppercase tracking-wider rounded-full">Activo</span>
+                                </h3>
+                                <p className="text-amber-700/70 dark:text-amber-400/70 text-sm">Modificar los productos que están subidos actualmente</p>
                             </div>
                         </button>
                     </div>

@@ -689,7 +689,30 @@ export async function clearCatalogDraft() {
         console.error("Error clearing catalog draft:", error);
         return { success: false, error };
     }
+}export async function getActiveCatalogProducts(): Promise<CatalogProduct[]> {
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                isArchived: false
+            }
+        });
+
+        return products.map(p => ({
+            id: p.id,
+            name: p.name,
+            price: Number(p.price),
+            category: p.category,
+            format: p.format,
+            packageType: p.packageType,
+            packageQuantity: p.packageQuantity,
+            unitPrice: p.unitPrice ? Number(p.unitPrice) : null,
+            stock: p.stock,
+            isStockTracked: p.isStockTracked,
+            isActive: true,
+            provider: p.provider
+        }));
+    } catch (error) {
+        console.error("Error fetching active catalog products:", error);
+        return [];
+    }
 }
-
-
-
