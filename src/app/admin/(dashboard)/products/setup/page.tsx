@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { History, CalendarDays, FilePlus, ChevronRight, Loader2, PackageOpen } from "lucide-react";
-import { getProductsFromCycle, publishCatalog, getRecentCycles, getQuinteroProducts, CatalogProduct } from "@/actions/admin/catalog-actions";
+import { getProductsFromCycle, publishCatalog, getRecentCycles, getQuinteroProducts, getComu4Products, CatalogProduct } from "@/actions/admin/catalog-actions";
 import CatalogEditor from "@/components/admin/CatalogEditor";
 
 type Step = "source" | "editor" | "summary";
+type SourceType = number | "blank" | "quintero" | "comu4";
 
 export default function ProductSetupPage() {
     const [step, setStep] = useState<Step>("source");
@@ -22,7 +23,7 @@ export default function ProductSetupPage() {
         });
     }, []);
 
-    const handleSourceSelect = async (source: number | "blank" | "quintero") => {
+    const handleSourceSelect = async (source: SourceType) => {
         setLoading(true);
         try {
             let fetchedProducts: CatalogProduct[] = [];
@@ -30,6 +31,8 @@ export default function ProductSetupPage() {
                 fetchedProducts = [];
             } else if (source === "quintero") {
                 fetchedProducts = await getQuinteroProducts();
+            } else if (source === "comu4") {
+                fetchedProducts = await getComu4Products();
             } else {
                 fetchedProducts = await getProductsFromCycle(source as number);
             }
@@ -145,6 +148,21 @@ export default function ProductSetupPage() {
                             <div>
                                 <h3 className="font-bold text-zinc-900 dark:text-zinc-50">Importar Quintero</h3>
                                 <p className="text-zinc-500 dark:text-zinc-400 text-sm">Cargar todos los productos de stock controlado</p>
+                            </div>
+                        </button>
+
+                        {/* Option: Import Comu 4 */}
+                        <button
+                            onClick={() => handleSourceSelect("comu4")}
+                            disabled={loading}
+                            className="p-6 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-2xl text-left hover:shadow-md transition-all flex items-center gap-4 group"
+                        >
+                            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                <FilePlus size={20} />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-zinc-900 dark:text-zinc-50">Importar comu -4.csv</h3>
+                                <p className="text-zinc-500 dark:text-zinc-400 text-sm">Cargar productos de la lista externa</p>
                             </div>
                         </button>
                     </div>

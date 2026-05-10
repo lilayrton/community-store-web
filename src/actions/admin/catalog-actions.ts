@@ -613,3 +613,60 @@ export async function updateProductDetails(id: string, data: Partial<CatalogProd
         return { success: false, error };
     }
 }
+export async function getComu4Products(): Promise<CatalogProduct[]> {
+    try {
+        const fs = require('fs');
+        const path = require('path');
+        const csvPath = path.join(process.cwd(), 'listas', 'comu -4.csv');
+        
+        if (!fs.existsSync(csvPath)) return [];
+        
+        const content = fs.readFileSync(csvPath, 'utf-8');
+        const lines = content.split('\n').filter((line: string) => line.trim() !== '');
+
+        return lines.map((line: string) => {
+            const [csvId, name, packageInfo, totalPriceStr] = line.split(';');
+            if (!name || !totalPriceStr) return null;
+            
+            let price = parseFloat(totalPriceStr.replace(',', '.'));
+            if (isNaN(price)) price = 0;
+
+            let packageType = "Unidad";
+            let packageQuantity = 1;
+            let unitPrice = price;
+
+            if (packageInfo) {
+                if (packageInfo.toLowerCase().includes('fraccion')) packageType = "Fraccion";
+                else if (packageInfo.toLowerCase().includes('caja')) packageType = "Caja";
+                else if (packageInfo.toLowerCase().includes('bolsa')) packageType = "Bolsa";
+                else if (packageInfo.toLowerCase().includes('display')) packageType = "Display";
+
+                const xMatch = packageInfo.match(/x\s*(\d+)/i) || packageInfo.match(/(\d+)\s*u/i) || packageInfo.match(/X\s*(\d+)/);
+                if (xMatch) packageQuantity = parseInt(xMatch[1]);
+
+                const unitMatch = packageInfo.match(/\$(\d+[\d,.]*)/);
+                if (unitMatch) {
+                    unitPrice = parseFloat(unitMatch[1].replace(',', '.'));
+                } else if (packageQuantity > 0) {
+                    unitPrice = price / packageQuantity;
+                }
+            }
+
+            return {
+                id: `COMU4-${csvId}`,
+                name: name.trim(),
+                price,
+                category: "General",
+                packageType,
+                packageQuantity,
+                unitPrice,
+                isActive: true,
+                isStockTracked: false,
+                format: packageInfo.trim()
+            };
+        }).filter((p: any) => p !== null);
+    } catch (error) {
+        console.error("Error reading comu-4.csv:", error);
+        return [];
+    }
+}
