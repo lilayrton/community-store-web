@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { History, CalendarDays, FilePlus, ChevronRight, Loader2, PackageOpen } from "lucide-react";
-import { getProductsFromCycle, publishCatalog, getRecentCycles, getQuinteroProducts, getComu4Products, CatalogProduct } from "@/actions/admin/catalog-actions";
+import { getProductsFromCycle, publishCatalog, getRecentCycles, getQuinteroProducts, getComu4Products, clearCatalogDraft, CatalogProduct } from "@/actions/admin/catalog-actions";
 import CatalogEditor from "@/components/admin/CatalogEditor";
 
 type Step = "source" | "editor" | "summary";
@@ -54,6 +54,7 @@ export default function ProductSetupPage() {
             const result = await publishCatalog(finalProducts);
             if (result.success) {
                 localStorage.removeItem("catalog-editor-draft");
+                clearCatalogDraft();
                 alert(`¡Catálogo actualizado con ${result.count} productos activos! Recordá abrir una Comunitaria desde el Dashboard para empezar a vender.`);
                 setStep("source");
                 // Refresh cycles

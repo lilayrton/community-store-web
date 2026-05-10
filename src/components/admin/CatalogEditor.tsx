@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { CatalogProduct, searchProducts, getQuinteroProducts } from "@/actions/admin/catalog-actions";
+import { CatalogProduct, searchProducts, getQuinteroProducts, saveCatalogDraft, getCatalogDraft, clearCatalogDraft } from "@/actions/admin/catalog-actions";
 import { Search, Save, Package, Plus, X, Loader2, Copy, RotateCcw, ChevronDown, PackageOpen, ChevronUp, GripVertical, MoreVertical, Trash2, FolderPlus, ChevronRight } from "lucide-react";
 
 interface CatalogEditorProps {
@@ -256,39 +256,65 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
         return sortedKeys.flatMap(k => groups[k]);
     };
 
-    // Draft Logic
+    // Draft Logic - Database Priority
     useEffect(() => {
-        const savedDraft = localStorage.getItem("catalog-editor-draft");
-        if (savedDraft) {
-            try {
-                const parsed = JSON.parse(savedDraft);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    if (window.confirm("Se encontró un progreso no guardado de tu sesión anterior. ¿Deseas restaurarlo?\n\n(Si seleccionas Cancelar, se cargará la plantilla que elegiste y el borrador anterior se borrará).")) {
-                        setProducts(parsed);
-                    } else {
-                        localStorage.removeItem("catalog-editor-draft");
+        const loadDraft = async () => {
+            // First check database draft
+            const dbDraft = await getCatalogDraft();
+            
+            // Then check local draft (from previous version)
+            const localDraftStr = localStorage.getItem("catalog-editor-draft");
+            let localDraft: CatalogProduct[] | null = null;
+            if (localDraftStr) {
+                try {
+                    localDraft = JSON.parse(localDraftStr);
+                } catch (e) {}
+            }
+
+            // Decide which one to show
+            const finalDraft = dbDraft || localDraft;
+
+            if (finalDraft && Array.isArray(finalDraft) && finalDraft.length > 0) {
+                const source = dbDraft ? "en la nube" : "local";
+                if (window.confirm(`Se encontró un progreso no guardado ${source}. ¿Deseas restaurarlo?\n\n(Si seleccionas Cancelar, se cargará la plantilla que elegiste y el borrador se borrará).`)) {
+                    setProducts(finalDraft);
+                    // If it was local, save it to DB now to synchronize
+                    if (!dbDraft && localDraft) {
+                        saveCatalogDraft(localDraft);
                     }
+                } else {
+                    localStorage.removeItem("catalog-editor-draft");
+                    clearCatalogDraft();
                 }
-            } catch (e) {}
-        }
+            }
+        };
+
+        loadDraft();
     }, []);
 
-    // Auto-save effect
+    // Auto-save effect (Sync to Database)
     useEffect(() => {
         const productsToSave = getSortedProductsToPublish();
         if (productsToSave.length > 0) {
+            // Save to localStorage (fast fallback)
             localStorage.setItem("catalog-editor-draft", JSON.stringify(productsToSave));
+            // Save to Database (cross-device)
+            saveCatalogDraft(productsToSave);
             setLastSaved(new Date());
         } else {
             localStorage.removeItem("catalog-editor-draft");
+            clearCatalogDraft();
         }
     }, [products, availableProviders]);
 
     const handleSaveDraft = () => {
-        localStorage.setItem("catalog-editor-draft", JSON.stringify(getSortedProductsToPublish()));
+        const productsToSave = getSortedProductsToPublish();
+        localStorage.setItem("catalog-editor-draft", JSON.stringify(productsToSave));
+        saveCatalogDraft(productsToSave);
         setLastSaved(new Date());
-        alert("¡Progreso guardado! (Igualmente, se guarda automáticamente en cada cambio)");
+        alert("¡Progreso guardado en la nube! (Igualmente, se guarda automáticamente en cada cambio)");
     };
+
 
     const handleResetDraft = () => {
         if (window.confirm("¿Estás seguro de que deseas reiniciar? Se perderá el progreso actual no guardado.")) {

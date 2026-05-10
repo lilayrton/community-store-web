@@ -99,3 +99,8 @@ model StockLog {
   username  String?  // Visual identifier "Admin", "Juan", etc.
   createdAt DateTime @default(now())
 }
+model CatalogDraft {
+  id        String   @id @default("default")
+  data      Json     // Array of CatalogProduct
+  updatedAt DateTime @updatedAt
+}

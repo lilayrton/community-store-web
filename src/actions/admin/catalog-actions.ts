@@ -646,4 +646,50 @@ export async function getComu4Products(): Promise<CatalogProduct[]> {
     }
 }
 
+export async function saveCatalogDraft(products: CatalogProduct[]) {
+    try {
+        await prisma.catalogDraft.upsert({
+            where: { id: 'default' },
+            update: {
+                data: products as any,
+                updatedAt: new Date()
+            },
+            create: {
+                id: 'default',
+                data: products as any
+            }
+        });
+        return { success: true };
+    } catch (error) {
+        console.error("Error saving catalog draft:", error);
+        return { success: false, error };
+    }
+}
+
+export async function getCatalogDraft(): Promise<CatalogProduct[] | null> {
+    try {
+        const draft = await prisma.catalogDraft.findUnique({
+            where: { id: 'default' }
+        });
+        if (!draft) return null;
+        return draft.data as CatalogProduct[];
+    } catch (error) {
+        console.error("Error getting catalog draft:", error);
+        return null;
+    }
+}
+
+export async function clearCatalogDraft() {
+    try {
+        await prisma.catalogDraft.delete({
+            where: { id: 'default' }
+        }).catch(() => {}); // Ignore if doesn't exist
+        return { success: true };
+    } catch (error) {
+        console.error("Error clearing catalog draft:", error);
+        return { success: false, error };
+    }
+}
+
+
 
