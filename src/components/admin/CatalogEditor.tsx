@@ -102,6 +102,10 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
     const activeCount = products.filter(p => p.isActive).length;
 
     // Handlers
+    const handleNameChange = (id: string, newName: string) => {
+        setProducts(prev => prev.map(p => p.id === id ? { ...p, name: newName } : p));
+    };
+
     const handlePriceChange = (id: string, newPrice: string) => {
         const price = parseFloat(newPrice);
         setProducts(prev => prev.map(p => {
@@ -712,7 +716,13 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
                                                             </div>
                                                         </td>
                                                         <td className="p-4">
-                                                            <div className="font-medium text-zinc-900 dark:text-zinc-100">{product.name}</div>
+                                                            <input 
+                                                                type="text" 
+                                                                value={product.name} 
+                                                                onChange={(e) => handleNameChange(product.id, e.target.value)}
+                                                                className="w-full bg-transparent border-none p-0 font-medium text-zinc-900 dark:text-zinc-100 focus:ring-0 focus:outline-none"
+                                                                placeholder="Nombre del producto"
+                                                            />
                                                             <div className="text-xs text-zinc-400 font-mono">ID: {product.id.substring(0, 8)}</div>
                                                         </td>
                                                         <td className="p-4">
@@ -770,8 +780,14 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
                                                 <div className="flex justify-between items-start mb-4">
                                                     <div className="flex gap-3 items-start pr-2">
                                                         <input type="checkbox" checked={product.isActive} onChange={() => handleToggleActive(product.id)} className="w-6 h-6 rounded border-zinc-300 text-blue-600 mt-0.5" />
-                                                        <div>
-                                                            <div className="font-bold text-lg text-zinc-900 dark:text-zinc-100 leading-tight">{product.name}</div>
+                                                        <div className="flex-1">
+                                                            <input 
+                                                                type="text" 
+                                                                value={product.name} 
+                                                                onChange={(e) => handleNameChange(product.id, e.target.value)}
+                                                                className="w-full bg-transparent border-none p-0 font-bold text-lg text-zinc-900 dark:text-zinc-100 leading-tight focus:ring-0 focus:outline-none"
+                                                                placeholder="Nombre del producto"
+                                                            />
                                                             <div className="text-xs text-zinc-400 font-mono mt-1">ID: {product.id.substring(0, 8)}</div>
                                                         </div>
                                                     </div>
