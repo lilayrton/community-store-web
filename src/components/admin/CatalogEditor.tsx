@@ -256,8 +256,10 @@ export default function CatalogEditor({ initialProducts, onPublish, onBack }: Ca
         return sortedKeys.flatMap(k => groups[k]);
     };
 
-    // Draft Logic - Database Priority
+    // Draft Logic - Database Priority (Only if starting fresh)
     useEffect(() => {
+        if (initialProducts.length > 0) return; // Don't prompt if we already selected a source
+
         const loadDraft = async () => {
             // First check database draft
             const dbDraft = await getCatalogDraft();
