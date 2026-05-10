@@ -615,73 +615,35 @@ export async function updateProductDetails(id: string, data: Partial<CatalogProd
 }
 export async function getComu4Products(): Promise<CatalogProduct[]> {
     try {
-        const fs = require('fs');
-        const path = require('path');
-        const csvPath = path.join(process.cwd(), 'listas', 'comu -4.csv');
-        
-        console.log("Attempting to import from:", csvPath);
-        
-        if (!fs.existsSync(csvPath)) {
-            console.error("CSV file not found at:", csvPath);
-            return [];
-        }
-        
-        const content = fs.readFileSync(csvPath, 'utf-8');
-        const lines = content.split('\n').filter((line: string) => line.trim() !== '');
-        
-        console.log(`Found ${lines.length} lines in CSV`);
-
-        const products = lines.map((line: string) => {
-            const parts = line.split(';');
-            if (parts.length < 4) return null;
-            
-            const [csvId, name, packageInfo, totalPriceStr] = parts;
-            if (!name || !totalPriceStr) return null;
-            
-            let price = parseFloat(totalPriceStr.replace(',', '.').trim());
-            if (isNaN(price)) price = 0;
-
-            let packageType = "Unidad";
-            let packageQuantity = 1;
-            let unitPrice = price;
-
-            if (packageInfo) {
-                const info = packageInfo.toLowerCase();
-                if (info.includes('fraccion')) packageType = "Fraccion";
-                else if (info.includes('caja')) packageType = "Caja";
-                else if (info.includes('bolsa')) packageType = "Bolsa";
-                else if (info.includes('display') || info.includes('disp')) packageType = "Display";
-
-                const xMatch = packageInfo.match(/x\s*(\d+)/i) || packageInfo.match(/(\d+)\s*u/i) || packageInfo.match(/X\s*(\d+)/);
-                if (xMatch) packageQuantity = parseInt(xMatch[1]);
-
-                const unitMatch = packageInfo.match(/\$(\d+[\d,.]*)/);
-                if (unitMatch) {
-                    unitPrice = parseFloat(unitMatch[1].replace(',', '.').replace('c/u', '').trim());
-                } else if (packageQuantity > 0) {
-                    unitPrice = price / packageQuantity;
-                }
+        const products = await prisma.product.findMany({
+            where: {
+                id: {
+                    startsWith: 'COMU4-'
+                },
+                isArchived: false
             }
+        });
 
-            return {
-                id: `COMU4-${csvId.trim()}`,
-                name: name.trim(),
-                price,
-                category: "General",
-                packageType,
-                packageQuantity,
-                unitPrice,
-                isActive: true,
-                isStockTracked: false,
-                format: packageInfo.trim()
-            };
-        }).filter((p: any) => p !== null);
+        console.log(`Fetched ${products.length} COMU4 products from database`);
 
-        console.log(`Successfully parsed ${products.length} products`);
-        return products;
+        return products.map(p => ({
+            id: p.id,
+            name: p.name,
+            price: Number(p.price),
+            category: p.category,
+            format: p.format,
+            packageType: p.packageType,
+            packageQuantity: p.packageQuantity,
+            unitPrice: p.unitPrice ? Number(p.unitPrice) : null,
+            stock: p.stock,
+            isStockTracked: p.isStockTracked,
+            isActive: true, // For editor
+            provider: p.provider
+        }));
     } catch (error) {
-        console.error("Error reading comu-4.csv:", error);
+        console.error("Error fetching COMU4 products from DB:", error);
         return [];
     }
 }
+
 
