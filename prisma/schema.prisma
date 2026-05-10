@@ -45,6 +45,7 @@ model Product {
   isStockTracked Boolean @default(false)
   isArchived  Boolean  @default(false)
   provider    String?  // Optional supplier group for Catalog Editor
+  displayOrder Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   items       OrderItem[]

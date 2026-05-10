@@ -340,52 +340,51 @@ export async function publishCatalog(products: CatalogProduct[]) {
     try {
         console.log(`[Catalog] Publishing ${products.length} products...`);
 
-        // Separate new products from existing updates
-        const newProducts = products.filter(p => p.id.startsWith("MANUAL-"));
-        const existingProducts = products.filter(p => !p.id.startsWith("MANUAL-"));
-
         return await prisma.$transaction(async (tx) => {
 
             // 1. First, Archive ALL currently active products.
-            // This ensures products removed from the canvas are correctly archived.
             await tx.product.updateMany({
                 where: { isArchived: false },
                 data: { isArchived: true }
             });
 
-            // 2. Update Existing Products (this will un-archive the ones present in the list)
-            for (const p of existingProducts) {
-                await tx.product.update({
-                    where: { id: p.id },
-                    data: {
-                        price: p.price,
-                        unitPrice: p.unitPrice,
-                        packageType: p.packageType,
-                        packageQuantity: p.packageQuantity,
-                        isArchived: !p.isActive, // Active in list = Not Archived
-                        provider: p.provider,
-                        updatedAt: new Date()
-                    }
-                });
-            }
+            // 2. Process all products in the list to maintain their order
+            for (let i = 0; i < products.length; i++) {
+                const p = products[i];
+                const isNew = p.id.startsWith("MANUAL-");
 
-            // 3. Create New Products
-            for (const p of newProducts) {
-                await tx.product.create({
-                    data: {
-                        name: p.name,
-                        price: p.price,
-                        category: p.category,
-                        stock: 0,
-                        isArchived: !p.isActive,
-                        format: p.format || null,
-                        packageType: p.packageType || "Unidad",
-                        packageQuantity: p.packageQuantity || 1,
-                        unitPrice: p.unitPrice || p.price,
-                        isStockTracked: p.isStockTracked,
-                        provider: p.provider
-                    }
-                });
+                if (isNew) {
+                    await tx.product.create({
+                        data: {
+                            name: p.name,
+                            price: p.price,
+                            category: p.category,
+                            stock: 0,
+                            isArchived: !p.isActive,
+                            format: p.format || null,
+                            packageType: p.packageType || "Unidad",
+                            packageQuantity: p.packageQuantity || 1,
+                            unitPrice: p.unitPrice || p.price,
+                            isStockTracked: p.isStockTracked,
+                            provider: p.provider,
+                            displayOrder: i // Maintain order
+                        }
+                    });
+                } else {
+                    await tx.product.update({
+                        where: { id: p.id },
+                        data: {
+                            price: p.price,
+                            unitPrice: p.unitPrice,
+                            packageType: p.packageType,
+                            packageQuantity: p.packageQuantity,
+                            isArchived: !p.isActive,
+                            provider: p.provider,
+                            displayOrder: i, // Maintain order
+                            updatedAt: new Date()
+                        }
+                    });
+                }
             }
 
             return { success: true, count: products.length };
@@ -694,7 +693,8 @@ export async function clearCatalogDraft() {
         const products = await prisma.product.findMany({
             where: {
                 isArchived: false
-            }
+            },
+            orderBy: { displayOrder: 'asc' }
         });
 
         return products.map(p => ({

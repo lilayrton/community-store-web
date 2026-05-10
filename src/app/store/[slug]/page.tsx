@@ -36,7 +36,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
     try {
         products = await prisma.product.findMany({
             where: { isArchived: false },
-            orderBy: { name: 'asc' }
+            orderBy: { displayOrder: 'asc' }
         });
         console.log(`Fetched ${products.length} active products from DB`);
     } catch (e) {
