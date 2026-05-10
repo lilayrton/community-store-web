@@ -2,6 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { subWeeks } from "date-fns";
+import fs from 'fs';
+import path from 'path';
 
 export type CatalogProduct = {
     id: string;
@@ -614,29 +616,41 @@ export async function updateProductDetails(id: string, data: Partial<CatalogProd
 }
 export async function getComu3Products(): Promise<CatalogProduct[]> {
     try {
-        const fs = require('fs');
-        const path = require('path');
         const filePath = path.join(process.cwd(), 'listas', 'comu -3.csv');
+        console.log(`[Import] Attempting to read: ${filePath}`);
         
         if (!fs.existsSync(filePath)) {
-            console.error("CSV file not found:", filePath);
-            return [];
+            console.error("[Import] FILE NOT FOUND at path:", filePath);
+            // Try fallback to just 'listas/comu -3.csv' relative
+            const fallbackPath = path.resolve('./listas/comu -3.csv');
+            if (!fs.existsSync(fallbackPath)) {
+                return [];
+            }
         }
 
         const fileContent = fs.readFileSync(filePath, 'utf-8');
-        const lines = fileContent.split('\n');
+        // Handle BOM and different line endings
+        const cleanContent = fileContent.replace(/^\uFEFF/, '');
+        const lines = cleanContent.split(/\r?\n/);
+        
         const products: CatalogProduct[] = [];
 
         for (const line of lines) {
-            if (!line.trim()) continue;
-            const parts = line.split(';');
+            const trimmedLine = line.trim();
+            if (!trimmedLine) continue;
+            
+            const parts = trimmedLine.split(';');
             if (parts.length < 4) continue;
 
             const id = `COMU3-${parts[0].trim()}`;
             const name = parts[1].trim();
             const format = parts[2].trim();
+            
+            // Clean price string: remove dots (thousands) and replace comma with dot
             const totalPriceStr = parts[3].trim().replace(/\./g, '').replace(',', '.');
             const totalPrice = parseFloat(totalPriceStr);
+
+            if (isNaN(totalPrice)) continue;
 
             // Extract unit price if possible from format "Display x24u $2541,66 c/u"
             let unitPrice = totalPrice;
@@ -645,14 +659,16 @@ export async function getComu3Products(): Promise<CatalogProduct[]> {
             const qtyMatch = format.match(/x\s*(\d+)/i) || format.match(/(\d+)\s*u/i);
             if (qtyMatch) {
                 pkgQty = parseInt(qtyMatch[1]);
-                unitPrice = totalPrice / pkgQty;
+                if (pkgQty > 0) {
+                    unitPrice = totalPrice / pkgQty;
+                }
             }
 
             products.push({
                 id,
                 name,
                 price: totalPrice,
-                category: "Golosinas", // Default or detect from name? For now Golosinas seems appropriate for Comu3
+                category: "Golosinas",
                 format,
                 packageType: format.toLowerCase().includes('display') ? 'Display' : 'Fraccion',
                 packageQuantity: pkgQty,
@@ -664,10 +680,10 @@ export async function getComu3Products(): Promise<CatalogProduct[]> {
             });
         }
 
-        console.log(`Parsed ${products.length} products from comu -3.csv`);
+        console.log(`[Import] Successfully parsed ${products.length} products.`);
         return products;
     } catch (error) {
-        console.error("Error parsing COMU3 CSV:", error);
+        console.error("[Import] CRITICAL ERROR parsing COMU3 CSV:", error);
         return [];
     }
 }
