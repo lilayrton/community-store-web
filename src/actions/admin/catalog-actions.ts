@@ -619,16 +619,26 @@ export async function getComu4Products(): Promise<CatalogProduct[]> {
         const path = require('path');
         const csvPath = path.join(process.cwd(), 'listas', 'comu -4.csv');
         
-        if (!fs.existsSync(csvPath)) return [];
+        console.log("Attempting to import from:", csvPath);
+        
+        if (!fs.existsSync(csvPath)) {
+            console.error("CSV file not found at:", csvPath);
+            return [];
+        }
         
         const content = fs.readFileSync(csvPath, 'utf-8');
         const lines = content.split('\n').filter((line: string) => line.trim() !== '');
+        
+        console.log(`Found ${lines.length} lines in CSV`);
 
-        return lines.map((line: string) => {
-            const [csvId, name, packageInfo, totalPriceStr] = line.split(';');
+        const products = lines.map((line: string) => {
+            const parts = line.split(';');
+            if (parts.length < 4) return null;
+            
+            const [csvId, name, packageInfo, totalPriceStr] = parts;
             if (!name || !totalPriceStr) return null;
             
-            let price = parseFloat(totalPriceStr.replace(',', '.'));
+            let price = parseFloat(totalPriceStr.replace(',', '.').trim());
             if (isNaN(price)) price = 0;
 
             let packageType = "Unidad";
@@ -636,24 +646,25 @@ export async function getComu4Products(): Promise<CatalogProduct[]> {
             let unitPrice = price;
 
             if (packageInfo) {
-                if (packageInfo.toLowerCase().includes('fraccion')) packageType = "Fraccion";
-                else if (packageInfo.toLowerCase().includes('caja')) packageType = "Caja";
-                else if (packageInfo.toLowerCase().includes('bolsa')) packageType = "Bolsa";
-                else if (packageInfo.toLowerCase().includes('display')) packageType = "Display";
+                const info = packageInfo.toLowerCase();
+                if (info.includes('fraccion')) packageType = "Fraccion";
+                else if (info.includes('caja')) packageType = "Caja";
+                else if (info.includes('bolsa')) packageType = "Bolsa";
+                else if (info.includes('display') || info.includes('disp')) packageType = "Display";
 
                 const xMatch = packageInfo.match(/x\s*(\d+)/i) || packageInfo.match(/(\d+)\s*u/i) || packageInfo.match(/X\s*(\d+)/);
                 if (xMatch) packageQuantity = parseInt(xMatch[1]);
 
                 const unitMatch = packageInfo.match(/\$(\d+[\d,.]*)/);
                 if (unitMatch) {
-                    unitPrice = parseFloat(unitMatch[1].replace(',', '.'));
+                    unitPrice = parseFloat(unitMatch[1].replace(',', '.').replace('c/u', '').trim());
                 } else if (packageQuantity > 0) {
                     unitPrice = price / packageQuantity;
                 }
             }
 
             return {
-                id: `COMU4-${csvId}`,
+                id: `COMU4-${csvId.trim()}`,
                 name: name.trim(),
                 price,
                 category: "General",
@@ -665,8 +676,12 @@ export async function getComu4Products(): Promise<CatalogProduct[]> {
                 format: packageInfo.trim()
             };
         }).filter((p: any) => p !== null);
+
+        console.log(`Successfully parsed ${products.length} products`);
+        return products;
     } catch (error) {
         console.error("Error reading comu-4.csv:", error);
         return [];
     }
 }
+
