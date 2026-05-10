@@ -624,7 +624,7 @@ export async function getComu3Products(): Promise<CatalogProduct[]> {
                 },
                 isArchived: false
             },
-            orderBy: { name: 'asc' }
+            orderBy: { displayOrder: 'asc' }
         });
 
         console.log(`[Import] Found ${products.length} COMU3 products in database.`);

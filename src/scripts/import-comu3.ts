@@ -62,7 +62,8 @@ async function main() {
                 format: packageInfo,
                 isArchived: false,
                 category: "Golosinas",
-                provider: "Comu3"
+                provider: "Comu3",
+                displayOrder: count // Preserve original order
             },
             create: {
                 id,
@@ -76,7 +77,8 @@ async function main() {
                 category: "Golosinas",
                 stock: 0,
                 isStockTracked: false,
-                provider: "Comu3"
+                provider: "Comu3",
+                displayOrder: count // Preserve original order
             }
         });
         count++;
