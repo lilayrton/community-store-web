@@ -612,35 +612,62 @@ export async function updateProductDetails(id: string, data: Partial<CatalogProd
         return { success: false, error };
     }
 }
-export async function getComu4Products(): Promise<CatalogProduct[]> {
+export async function getComu3Products(): Promise<CatalogProduct[]> {
     try {
-        const products = await prisma.product.findMany({
-            where: {
-                id: {
-                    startsWith: 'COMU4-'
-                },
-                isArchived: false
+        const fs = require('fs');
+        const path = require('path');
+        const filePath = path.join(process.cwd(), 'listas', 'comu -3.csv');
+        
+        if (!fs.existsSync(filePath)) {
+            console.error("CSV file not found:", filePath);
+            return [];
+        }
+
+        const fileContent = fs.readFileSync(filePath, 'utf-8');
+        const lines = fileContent.split('\n');
+        const products: CatalogProduct[] = [];
+
+        for (const line of lines) {
+            if (!line.trim()) continue;
+            const parts = line.split(';');
+            if (parts.length < 4) continue;
+
+            const id = `COMU3-${parts[0].trim()}`;
+            const name = parts[1].trim();
+            const format = parts[2].trim();
+            const totalPriceStr = parts[3].trim().replace(/\./g, '').replace(',', '.');
+            const totalPrice = parseFloat(totalPriceStr);
+
+            // Extract unit price if possible from format "Display x24u $2541,66 c/u"
+            let unitPrice = totalPrice;
+            let pkgQty = 1;
+            
+            const qtyMatch = format.match(/x\s*(\d+)/i) || format.match(/(\d+)\s*u/i);
+            if (qtyMatch) {
+                pkgQty = parseInt(qtyMatch[1]);
+                unitPrice = totalPrice / pkgQty;
             }
-        });
 
-        console.log(`Fetched ${products.length} COMU4 products from database`);
+            products.push({
+                id,
+                name,
+                price: totalPrice,
+                category: "Golosinas", // Default or detect from name? For now Golosinas seems appropriate for Comu3
+                format,
+                packageType: format.toLowerCase().includes('display') ? 'Display' : 'Fraccion',
+                packageQuantity: pkgQty,
+                unitPrice: unitPrice,
+                stock: 0,
+                isStockTracked: false,
+                isActive: true,
+                provider: "Comu3"
+            });
+        }
 
-        return products.map(p => ({
-            id: p.id,
-            name: p.name,
-            price: Number(p.price),
-            category: p.category,
-            format: p.format,
-            packageType: p.packageType,
-            packageQuantity: p.packageQuantity,
-            unitPrice: p.unitPrice ? Number(p.unitPrice) : null,
-            stock: p.stock,
-            isStockTracked: p.isStockTracked,
-            isActive: true, // For editor
-            provider: p.provider
-        }));
+        console.log(`Parsed ${products.length} products from comu -3.csv`);
+        return products;
     } catch (error) {
-        console.error("Error fetching COMU4 products from DB:", error);
+        console.error("Error parsing COMU3 CSV:", error);
         return [];
     }
 }

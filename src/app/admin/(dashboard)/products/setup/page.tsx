@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { History, CalendarDays, FilePlus, ChevronRight, Loader2, PackageOpen, Save } from "lucide-react";
-import { getProductsFromCycle, publishCatalog, getRecentCycles, getQuinteroProducts, getComu4Products, clearCatalogDraft, getActiveCatalogProducts, CatalogProduct } from "@/actions/admin/catalog-actions";
+import { getProductsFromCycle, publishCatalog, getRecentCycles, getQuinteroProducts, getComu3Products, clearCatalogDraft, getActiveCatalogProducts, CatalogProduct } from "@/actions/admin/catalog-actions";
 import CatalogEditor from "@/components/admin/CatalogEditor";
 
 type Step = "source" | "editor" | "summary";
-type SourceType = number | "blank" | "quintero" | "comu4" | "active";
+type SourceType = number | "blank" | "quintero" | "comu3" | "active";
 
 export default function ProductSetupPage() {
     const [step, setStep] = useState<Step>("source");
@@ -31,8 +31,8 @@ export default function ProductSetupPage() {
                 fetchedProducts = [];
             } else if (source === "quintero") {
                 fetchedProducts = await getQuinteroProducts();
-            } else if (source === "comu4") {
-                fetchedProducts = await getComu4Products();
+            } else if (source === "comu3") {
+                fetchedProducts = await getComu3Products();
             } else if (source === "active") {
                 fetchedProducts = await getActiveCatalogProducts();
             } else {
@@ -154,9 +154,9 @@ export default function ProductSetupPage() {
                             </div>
                         </button>
 
-                        {/* Option: Import Comu 4 */}
+                        {/* Option: Import Comu 3 */}
                         <button
-                            onClick={() => handleSourceSelect("comu4")}
+                            onClick={() => handleSourceSelect("comu3")}
                             disabled={loading}
                             className="p-6 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-2xl text-left hover:shadow-md transition-all flex items-center gap-4 group"
                         >
@@ -164,8 +164,8 @@ export default function ProductSetupPage() {
                                 <FilePlus size={20} />
                             </div>
                             <div>
-                                <h3 className="font-bold text-zinc-900 dark:text-zinc-50">Importar comu -4.csv</h3>
-                                <p className="text-zinc-500 dark:text-zinc-400 text-sm">Cargar productos de la lista externa</p>
+                                <h3 className="font-bold text-zinc-900 dark:text-zinc-50">Importar comu -3.csv</h3>
+                                <p className="text-zinc-500 dark:text-zinc-400 text-sm">Cargar productos de la nueva lista externa</p>
                             </div>
                         </button>
 
