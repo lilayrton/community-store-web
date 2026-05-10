@@ -616,74 +616,35 @@ export async function updateProductDetails(id: string, data: Partial<CatalogProd
 }
 export async function getComu3Products(): Promise<CatalogProduct[]> {
     try {
-        const filePath = path.join(process.cwd(), 'listas', 'comu -3.csv');
-        console.log(`[Import] Attempting to read: ${filePath}`);
-        
-        if (!fs.existsSync(filePath)) {
-            console.error("[Import] FILE NOT FOUND at path:", filePath);
-            // Try fallback to just 'listas/comu -3.csv' relative
-            const fallbackPath = path.resolve('./listas/comu -3.csv');
-            if (!fs.existsSync(fallbackPath)) {
-                return [];
-            }
-        }
+        console.log("[Import] Fetching COMU3 products from database...");
+        const products = await prisma.product.findMany({
+            where: {
+                id: {
+                    startsWith: 'COMU3-'
+                },
+                isArchived: false
+            },
+            orderBy: { name: 'asc' }
+        });
 
-        const fileContent = fs.readFileSync(filePath, 'utf-8');
-        // Handle BOM and different line endings
-        const cleanContent = fileContent.replace(/^\uFEFF/, '');
-        const lines = cleanContent.split(/\r?\n/);
-        
-        const products: CatalogProduct[] = [];
+        console.log(`[Import] Found ${products.length} COMU3 products in database.`);
 
-        for (const line of lines) {
-            const trimmedLine = line.trim();
-            if (!trimmedLine) continue;
-            
-            const parts = trimmedLine.split(';');
-            if (parts.length < 4) continue;
-
-            const id = `COMU3-${parts[0].trim()}`;
-            const name = parts[1].trim();
-            const format = parts[2].trim();
-            
-            // Clean price string: remove dots (thousands) and replace comma with dot
-            const totalPriceStr = parts[3].trim().replace(/\./g, '').replace(',', '.');
-            const totalPrice = parseFloat(totalPriceStr);
-
-            if (isNaN(totalPrice)) continue;
-
-            // Extract unit price if possible from format "Display x24u $2541,66 c/u"
-            let unitPrice = totalPrice;
-            let pkgQty = 1;
-            
-            const qtyMatch = format.match(/x\s*(\d+)/i) || format.match(/(\d+)\s*u/i);
-            if (qtyMatch) {
-                pkgQty = parseInt(qtyMatch[1]);
-                if (pkgQty > 0) {
-                    unitPrice = totalPrice / pkgQty;
-                }
-            }
-
-            products.push({
-                id,
-                name,
-                price: totalPrice,
-                category: "Golosinas",
-                format,
-                packageType: format.toLowerCase().includes('display') ? 'Display' : 'Fraccion',
-                packageQuantity: pkgQty,
-                unitPrice: unitPrice,
-                stock: 0,
-                isStockTracked: false,
-                isActive: true,
-                provider: "Comu3"
-            });
-        }
-
-        console.log(`[Import] Successfully parsed ${products.length} products.`);
-        return products;
+        return products.map(p => ({
+            id: p.id,
+            name: p.name,
+            price: Number(p.price),
+            category: p.category,
+            format: p.format,
+            packageType: p.packageType,
+            packageQuantity: p.packageQuantity,
+            unitPrice: p.unitPrice ? Number(p.unitPrice) : null,
+            stock: p.stock,
+            isStockTracked: p.isStockTracked,
+            isActive: true,
+            provider: p.provider
+        }));
     } catch (error) {
-        console.error("[Import] CRITICAL ERROR parsing COMU3 CSV:", error);
+        console.error("[Import] Error fetching COMU3 products from DB:", error);
         return [];
     }
 }
