@@ -290,7 +290,11 @@ export async function getDashboardStats(store?: string) {
         
         const hoursSum: Record<string, number> = {};
         for (const order of ordersForHours) {
-            const hour = new Date(order.createdAt).getHours();
+            // Adjust to Argentina Time (GMT-3)
+            const date = new Date(order.createdAt);
+            const argentinaDate = new Date(date.toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }));
+            const hour = argentinaDate.getHours();
+            
             const hourLabel = `${hour.toString().padStart(2, '0')}:00`;
             hoursSum[hourLabel] = (hoursSum[hourLabel] || 0) + 1;
         }

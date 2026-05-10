@@ -123,9 +123,13 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
                                         <div className="text-xs text-zinc-400">{order.user?.email}</div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        {new Date(order.createdAt).toLocaleDateString()}
+                                        {new Date(order.createdAt).toLocaleDateString("es-AR", { timeZone: "America/Argentina/Buenos_Aires" })}
                                         <div className="text-xs text-zinc-400">
-                                            {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {new Date(order.createdAt).toLocaleTimeString("es-AR", {
+                                                timeZone: "America/Argentina/Buenos_Aires",
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 font-medium">

@@ -84,14 +84,18 @@ export default async function OrderDetailsPage({ params }: { params: { id: strin
                             <span>Fecha:</span>
                             <span className="font-medium text-zinc-900 dark:text-zinc-200 flex items-center gap-1">
                                 <Calendar className="w-3 h-3" />
-                                {new Date(order.createdAt).toLocaleDateString('es-AR')}
+                                {new Date(order.createdAt).toLocaleDateString('es-AR', { timeZone: "America/Argentina/Buenos_Aires" })}
                             </span>
                         </div>
                         <div className="flex justify-between">
                             <span>Hora:</span>
                             <span className="font-medium text-zinc-900 dark:text-zinc-200 flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
-                                {new Date(order.createdAt).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
+                                {new Date(order.createdAt).toLocaleTimeString('es-AR', {
+                                    timeZone: "America/Argentina/Buenos_Aires",
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
                             </span>
                         </div>
                         <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 mt-3">
