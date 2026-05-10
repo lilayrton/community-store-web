@@ -6,21 +6,74 @@ export async function getDashboardStats(store?: string) {
     try {
         const where: any = store ? { store } : {};
 
-        // 1. Basic Counts
+        // 1. Get active cycle or latest closed cycle to define the range
+        const activeCycle = await prisma.communityCycle.findFirst({
+            where: { status: "OPEN" },
+            orderBy: { createdAt: "desc" }
+        });
+        
+        let cycleFilterWhere: any = {};
+        let cycleStartDate: Date;
+        let cycleEndDate: Date = new Date();
+
+        if (activeCycle) {
+            cycleStartDate = activeCycle.startDate;
+            cycleFilterWhere = {
+                OR: [
+                    { cycleId: activeCycle.id },
+                    { createdAt: { gte: cycleStartDate } }
+                ]
+            };
+        } else {
+            const latestClosed = await prisma.communityCycle.findFirst({
+                where: { status: "CLOSED" },
+                orderBy: { endDate: "desc" }
+            });
+            if (latestClosed) {
+                cycleStartDate = latestClosed.startDate;
+                cycleEndDate = latestClosed.endDate || new Date();
+                cycleFilterWhere = {
+                    OR: [
+                        { cycleId: latestClosed.id },
+                        { 
+                            createdAt: { 
+                                gte: cycleStartDate,
+                                lte: cycleEndDate
+                            } 
+                        }
+                    ]
+                };
+            } else {
+                cycleStartDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // Last 30 days fallback
+                cycleFilterWhere = {
+                    createdAt: { gte: cycleStartDate }
+                };
+            }
+        }
+
+        const salesRangeWhere = {
+            ...cycleFilterWhere,
+            ...where
+        };
+
+        // 2. Basic Counts
         const totalOrders = await prisma.order.count({
-            where,
+            where: salesRangeWhere,
         });
 
-        // 2. Sales Aggregation
+        // 3. Sales Aggregation
         const salesAggregate = await prisma.order.aggregate({
             _sum: {
                 total: true,
             },
-            where,
+            where: salesRangeWhere,
         });
         const totalSales = salesAggregate._sum && salesAggregate._sum.total ? Number(salesAggregate._sum.total) : 0;
 
-        // 3. Top Customers
+        // 4. Average Ticket
+        const averageTicket = totalOrders > 0 ? totalSales / totalOrders : 0;
+
+        // 5. Top Customers
         const groupedOrders = await prisma.order.groupBy({
             by: ['userId'],
             _sum: {
@@ -30,7 +83,7 @@ export async function getDashboardStats(store?: string) {
                 id: true,
             },
             where: {
-                ...where,
+                ...salesRangeWhere,
                 userId: { not: null }
             },
             orderBy: {
@@ -54,59 +107,11 @@ export async function getDashboardStats(store?: string) {
                 name: user?.name || user?.email || "Usuario Desconocido",
                 totalOrders: group._count.id,
                 totalSpent: group._sum.total ? Number(group._sum.total) : 0,
-                lastOrderDate: new Date().toISOString()
+                lastOrderDate: cycleEndDate.toISOString()
             };
         });
 
-        // 4. Inactive Customers (Sin Comprar)
-        // Get active cycle or latest closed cycle
-        const activeCycle = await prisma.communityCycle.findFirst({
-            where: { status: "OPEN" },
-            orderBy: { createdAt: "desc" }
-        });
-        
-        let cycleFilterWhere: any = {};
-        let cycleEndTime: string | null = null;
-        let cycleStartDate: Date | null = null;
-
-        if (activeCycle) {
-            cycleFilterWhere = {
-                OR: [
-                    { cycleId: activeCycle.id },
-                    { createdAt: { gte: activeCycle.startDate } } // For backward compatibility
-                ]
-            };
-            cycleEndTime = null; // Open cycle doesn't have an end time yet
-            cycleStartDate = activeCycle.startDate;
-        } else {
-            const latestClosed = await prisma.communityCycle.findFirst({
-                where: { status: "CLOSED" },
-                orderBy: { endDate: "desc" }
-            });
-            if (latestClosed) {
-                cycleFilterWhere = {
-                    OR: [
-                        { cycleId: latestClosed.id },
-                        { 
-                            createdAt: { 
-                                gte: latestClosed.startDate,
-                                lte: latestClosed.endDate || new Date()
-                            } 
-                        }
-                    ]
-                };
-                cycleEndTime = latestClosed.endDate?.toISOString() || null;
-                cycleStartDate = latestClosed.startDate;
-            } else {
-                // Fallback to last 7 days if no cycles exist
-                const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-                cycleFilterWhere = {
-                    createdAt: { gte: lastWeek }
-                };
-                cycleStartDate = lastWeek;
-            }
-        }
-
+        // 6. Inactive Customers
         const userWhere: any = {
             isActive: true,
             role: { not: 'ADMIN' }
@@ -117,27 +122,19 @@ export async function getDashboardStats(store?: string) {
 
         const activeUsers = await prisma.user.findMany({
             where: userWhere,
-            select: {
-                id: true,
-                name: true,
-                phone: true,
-                email: true
-            }
+            select: { id: true, name: true, phone: true, email: true }
         });
 
         const buyingUsers = await prisma.order.findMany({
             where: {
-                ...cycleFilterWhere,
+                ...salesRangeWhere,
                 userId: { in: activeUsers.map(u => u.id) }
             },
-            select: {
-                userId: true
-            },
+            select: { userId: true },
             distinct: ['userId']
         });
 
         const buyingUserIds = new Set(buyingUsers.map(o => o.userId));
-
         const inactiveCustomers = activeUsers
             .filter(user => !buyingUserIds.has(user.id))
             .map(user => ({
@@ -146,47 +143,31 @@ export async function getDashboardStats(store?: string) {
                 phone: user.phone || "-"
             }));
 
-        // 5. Duplicate Orders
-        const rangeWhere = {
-            ...cycleFilterWhere,
-            ...where
-        };
-
+        // 7. Duplicate Orders
         const potentialDuplicates = await prisma.order.groupBy({
             by: ['userId'],
             where: {
-                ...rangeWhere,
+                ...salesRangeWhere,
                 userId: { not: null }
             },
-            _count: {
-                id: true
-            },
+            _count: { id: true },
             having: {
-                id: {
-                    _count: {
-                        gt: 1
-                    }
-                }
+                id: { _count: { gt: 1 } }
             }
         });
 
         let duplicateOrders: any[] = [];
         if (potentialDuplicates.length > 0) {
             const dupUserIds = potentialDuplicates.map(d => d.userId) as string[];
-
             const dupOrders = await prisma.order.findMany({
                 where: {
                     userId: { in: dupUserIds },
-                    ...cycleFilterWhere
+                    ...salesRangeWhere
                 },
                 include: {
-                    user: {
-                        select: { name: true, email: true }
-                    }
+                    user: { select: { name: true, email: true } }
                 },
-                orderBy: {
-                    createdAt: 'desc'
-                }
+                orderBy: { createdAt: 'desc' }
             });
 
             duplicateOrders = dupOrders.map(order => ({
@@ -195,54 +176,23 @@ export async function getDashboardStats(store?: string) {
                 value: Number(order.total),
                 time: new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             }));
-            duplicateOrders = dupOrders.map(order => ({
-                id: order.id,
-                customerName: order.user?.name || order.user?.email || "Sin Nombre",
-                value: Number(order.total),
-                time: new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            }));
         }
 
-        // 7. Average Ticket
-        const averageTicket = totalOrders > 0 ? totalSales / totalOrders : 0;
-
-        // 8. Stagnant Products (Estancados)
-        // Products that have 0 sales in the current cycle for the filtered store (or all stores if no filter)
-        // If we filter by store, we should only check orders in THAT store.
-        // But Products are global? If a product didn't sell in Alsina, it might have sold in Malabia.
-        // If 'store' is selected, we want products that didn't sell IN THAT store.
-
-        // Find all products
+        // 8. Stagnant Products
         const allProducts = await prisma.product.findMany({
-            select: {
-                id: true,
-                name: true,
-                price: true,
-                category: true
-            }
+            where: { isArchived: false },
+            select: { id: true, name: true, price: true, category: true }
         });
-
-        // Find products sold in current range (and store)
-        const salesRangeWhere = {
-            createdAt: {
-                gte: currentRange.start,
-                lte: currentRange.end
-            },
-            ...where
-        };
 
         const soldProductIds = await prisma.orderItem.findMany({
             where: {
                 order: salesRangeWhere
             },
-            select: {
-                productId: true
-            },
+            select: { productId: true },
             distinct: ['productId']
         });
 
         const soldSet = new Set(soldProductIds.map(i => i.productId));
-
         const stagnantProducts = allProducts
             .filter(p => !soldSet.has(p.id))
             .map(p => ({
@@ -251,55 +201,21 @@ export async function getDashboardStats(store?: string) {
                 price: Number(p.price),
                 categoryName: p.category
             }))
-            .slice(0, 10); // Limit to 10 for display
+            .slice(0, 10);
 
-        // 9. Potential Customers (Nuevos Clientes - Primera Compra en este ciclo)
-        // Logic: Users who have an order in current range, and that is their FIRST and ONLY order.
-        // Actually, if they made 2 orders this week and 0 before, are they "Potential"?
-        // User definition: "realizaron su pedido numero 1".
-        // Let's count users who have strictly 1 order lifetime, and that order is in current salesRange.
-        // OR: Users whose `min(createdAt)` order is in current range.
-
-        // Strategy: Get all users who ordered in this cycle.
-        // For each, check if their total order count is 1. (Strict "One-time buyer acquired now")
-        // If they bought 2 times this week (and 0 before), they are also "New" but "High value".
-        // "pedido numero 1" implies the event of the first order happened now.
-
-        // Let's fetch all orders in current range.
-        // Then check if for that user, it was their first order.
+        // 9. New Customers (First order ever in this range)
         const usersOrderingInCycle = await prisma.user.findMany({
             where: {
-                orders: {
-                    some: salesRangeWhere // Reuse the store+date filter
-                }
-            },
-            include: {
-                _count: {
-                    select: { orders: true }
-                }
+                orders: { some: salesRangeWhere }
             }
         });
-
-        // Filter: Total orders should be 1? 
-        // Or should we check if their *first* order is in this range?
-        // If I buy for the first time on Monday, and again on Tuesday.
-        // On Wednesday, am I a "Potential Customer"?
-        // I "realicé mi pedido número 1". Yes.
-        // So I should count users whose `firstOrderDate` >= currentRange.start.
-
-        // To be precise and performant:
-        // Find users who ordered in this range.
-        // Check if they have ANY order before currentRange.start.
-        // If NO orders before start, then they are "New Customers".
 
         const newCustomerIds: string[] = [];
         for (const user of usersOrderingInCycle) {
             const previousOrdersCount = await prisma.order.count({
                 where: {
                     userId: user.id,
-                    createdAt: {
-                        lt: cycleStartDate || new Date()
-                    }
+                    createdAt: { lt: cycleStartDate }
                 }
             });
             if (previousOrdersCount === 0) {
@@ -307,47 +223,28 @@ export async function getDashboardStats(store?: string) {
             }
         }
 
-        const newCustomersRaw = await prisma.user.findMany({
+        const newCustomers = await prisma.user.findMany({
             where: { id: { in: newCustomerIds } },
-            select: { id: true, name: true, email: true, phone: true, createdAt: true }
-        });
-
-        const newCustomers = newCustomersRaw.map(u => ({
+            select: { id: true, name: true, email: true, phone: true }
+        }).then(users => users.map(u => ({
             id: u.id,
             name: u.name || "Sin nombre",
             email: u.email,
             phone: u.phone
-        }));
+        })));
 
-        // 10. Cycle End Time
-        // cycleEndTime is already set above
-
-        // 11. Top Selling Products (Top 10)
+        // 10. Top Selling Products
         const topProductGroup = await prisma.orderItem.groupBy({
             by: ['productId'],
-            where: {
-                order: salesRangeWhere
-            },
-            _sum: {
-                quantity: true
-            },
-            orderBy: {
-                _sum: {
-                    quantity: 'desc'
-                }
-            },
+            where: { order: salesRangeWhere },
+            _sum: { quantity: true },
+            orderBy: { _sum: { quantity: 'desc' } },
             take: 10
         });
 
-        // 12. Total Units Sold (Unidades Vendidas)
-        // Aggregation for total quantity of items sold in this cycle/store
         const totalUnitsGroup = await prisma.orderItem.aggregate({
-            _sum: {
-                quantity: true
-            },
-            where: {
-                order: salesRangeWhere
-            }
+            _sum: { quantity: true },
+            where: { order: salesRangeWhere }
         });
         const totalUnits = totalUnitsGroup._sum.quantity || 0;
 
@@ -359,7 +256,6 @@ export async function getDashboardStats(store?: string) {
                 select: { id: true, name: true }
             });
 
-            // Map results maintaining order from groupBy
             for (const group of topProductGroup) {
                 const product = products.find(p => p.id === group.productId);
                 if (product) {
@@ -372,9 +268,7 @@ export async function getDashboardStats(store?: string) {
             }
         }
 
-        // --- NEW CHARTS DATA ---
-        
-        // C1. Ventas por Categoría
+        // 11. Charts Data
         const orderItemsWithProducts = await prisma.orderItem.findMany({
             where: { order: salesRangeWhere },
             select: { quantity: true, product: { select: { category: true } } }
@@ -382,16 +276,15 @@ export async function getDashboardStats(store?: string) {
         
         const categorySum: Record<string, number> = {};
         for (const item of orderItemsWithProducts) {
-             const cat = item.product.category || 'Otros';
+             const cat = item.product?.category || 'Otros';
              categorySum[cat] = (categorySum[cat] || 0) + item.quantity;
         }
         const salesByCategory = Object.entries(categorySum)
             .map(([name, value]) => ({ name, value }))
             .sort((a,b) => b.value - a.value);
 
-        // C2. Pedidos por Hora
         const ordersForHours = await prisma.order.findMany({
-            where: { ...salesRangeWhere },
+            where: salesRangeWhere,
             select: { createdAt: true }
         });
         
@@ -402,11 +295,8 @@ export async function getDashboardStats(store?: string) {
             hoursSum[hourLabel] = (hoursSum[hourLabel] || 0) + 1;
         }
         
-        const minHour = Math.min(...Object.keys(hoursSum).map(h => parseInt(h.split(':')[0])), 8);
-        const maxHour = Math.max(...Object.keys(hoursSum).map(h => parseInt(h.split(':')[0])), 20);
-        
         const ordersByHour = [];
-        for (let i = minHour; i <= maxHour; i++) {
+        for (let i = 8; i <= 21; i++) {
             const label = `${i.toString().padStart(2, '0')}:00`;
             ordersByHour.push({
                 time: label,
@@ -414,14 +304,12 @@ export async function getDashboardStats(store?: string) {
             });
         }
 
-        // C3. Nuevos vs Recurrentes (Retención)
         const totalCustomersPurchased = usersOrderingInCycle.length;
         const recurringCustomersCount = totalCustomersPurchased - newCustomers.length;
-        
         const customerRetention = [
             { name: 'Nuevos', value: newCustomers.length, fill: '#ec4899' },
             { name: 'Recurrentes', value: recurringCustomersCount, fill: '#3b82f6' }
-        ].filter(item => item.value > 0); // Hide zeros
+        ].filter(item => item.value > 0);
 
         return {
             totalOrders,
@@ -432,10 +320,9 @@ export async function getDashboardStats(store?: string) {
             duplicateOrders,
             stagnantProducts,
             newCustomers,
-            cycleEndTime,
+            cycleEndTime: cycleEndDate.toISOString(),
             topProducts,
             totalUnits,
-            // Nuevos datos para gráficos:
             salesByCategory,
             ordersByHour,
             customerRetention
@@ -453,7 +340,11 @@ export async function getDashboardStats(store?: string) {
             newCustomers: [],
             cycleEndTime: null,
             topProducts: [],
-            totalUnits: 0
+            totalUnits: 0,
+            salesByCategory: [],
+            ordersByHour: [],
+            customerRetention: []
         };
     }
 }
+

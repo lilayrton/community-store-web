@@ -64,94 +64,7 @@ type DuplicateOrder = {
     time: string;
 };
 
-// Mock Data Generator - DETERMINISTIC
-const generateCustomers = (count: number, baseOrders: number): CustomerStat[] => {
-    return Array.from({ length: count }, (_, i) => ({
-        id: `cust-${i + 1}`,
-        name: `Cliente ${i + 1} Demo`,
-        totalOrders: Math.max(1, 25 - i + baseOrders),
-        totalSpent: Math.max(1000, (25 - i + baseOrders) * 1500),
-        lastOrderDate: "2023-12-23"
-    })).sort((a, b) => b.totalOrders - a.totalOrders);
-};
-
-const generateInactive = (count: number): InactiveCustomer[] => {
-    return Array.from({ length: count }, (_, i) => ({
-        id: `inactive-${i + 1}`,
-        name: `Usuario Inactivo ${i + 1}`,
-        phone: `+54 9 11 ${11111111 + i}`
-    }));
-};
-
-const generateDuplicates = (): DuplicateOrder[] => {
-    return [
-        { id: "dup-1a", customerName: "Maria Garcia", value: 4500, time: "10:30" },
-        { id: "dup-1b", customerName: "Maria Garcia", value: 4500, time: "10:32" },
-        { id: "dup-2a", customerName: "Carlos Lopez", value: 12500, time: "14:15" },
-        { id: "dup-2b", customerName: "Carlos Lopez", value: 12500, time: "14:15" },
-        { id: "dup-2c", customerName: "Carlos Lopez", value: 12500, time: "14:16" },
-    ];
-};
-
-const MOCK_DATA = {
-    "alsina": {
-        topCustomers: [
-            { id: "c1", name: "Graciela Fernández", totalOrders: 14, totalSpent: 9240000, lastOrderDate: "2026-04-28" },
-            { id: "c2", name: "Roberto Sánchez", totalOrders: 11, totalSpent: 7150000, lastOrderDate: "2026-04-27" },
-            { id: "c3", name: "María José Peralta", totalOrders: 10, totalSpent: 6800000, lastOrderDate: "2026-04-28" },
-            { id: "c4", name: "Jorge Domínguez", totalOrders: 9, totalSpent: 5940000, lastOrderDate: "2026-04-26" },
-            { id: "c5", name: "Claudia Romero", totalOrders: 8, totalSpent: 5200000, lastOrderDate: "2026-04-25" },
-            { id: "c6", name: "Daniel Herrera", totalOrders: 7, totalSpent: 4620000, lastOrderDate: "2026-04-24" },
-            { id: "c7", name: "Susana Gómez", totalOrders: 7, totalSpent: 4410000, lastOrderDate: "2026-04-23" },
-            { id: "c8", name: "Carlos Méndez", totalOrders: 6, totalSpent: 3780000, lastOrderDate: "2026-04-22" },
-            { id: "c9", name: "Valeria Torres", totalOrders: 5, totalSpent: 3250000, lastOrderDate: "2026-04-21" },
-            { id: "c10", name: "Pablo Acosta", totalOrders: 5, totalSpent: 3100000, lastOrderDate: "2026-04-20" },
-        ],
-        inactiveCustomers: [
-            { id: "i1", name: "Nora Villalba", phone: "+54 9 11 3421-8876" },
-            { id: "i2", name: "Gustavo Paredes", phone: "+54 9 11 2289-4432" },
-            { id: "i3", name: "Lorena Castillo", phone: "+54 9 11 5567-3310" },
-            { id: "i4", name: "Marcelo Ríos", phone: "+54 9 11 4430-9921" },
-            { id: "i5", name: "Patricia Nuñez", phone: "+54 9 11 6612-7745" },
-            { id: "i6", name: "Héctor Vidal", phone: "+54 9 11 3398-2200" },
-            { id: "i7", name: "Silvia Morales", phone: "+54 9 11 7723-5589" },
-            { id: "i8", name: "Ramón Contreras", phone: "+54 9 11 1145-6634" },
-        ],
-        duplicateOrders: [
-            { id: "dup-1a", customerName: "Graciela Fernández", value: 620000, time: "09:14" },
-            { id: "dup-1b", customerName: "Graciela Fernández", value: 620000, time: "09:16" },
-            { id: "dup-2a", customerName: "Jorge Domínguez", value: 890000, time: "11:42" },
-            { id: "dup-2b", customerName: "Jorge Domínguez", value: 890000, time: "11:43" },
-        ]
-    },
-    "malabia": {
-        topCustomers: [
-            { id: "m1", name: "Ana Belén Quiroga", totalOrders: 12, totalSpent: 7680000, lastOrderDate: "2026-04-28" },
-            { id: "m2", name: "Fernando Salinas", totalOrders: 10, totalSpent: 6500000, lastOrderDate: "2026-04-27" },
-            { id: "m3", name: "Marcela Ibáñez", totalOrders: 9, totalSpent: 5850000, lastOrderDate: "2026-04-26" },
-            { id: "m4", name: "Oscar Delgado", totalOrders: 8, totalSpent: 5120000, lastOrderDate: "2026-04-25" },
-            { id: "m5", name: "Roxana Medina", totalOrders: 7, totalSpent: 4410000, lastOrderDate: "2026-04-24" },
-            { id: "m6", name: "Sebastián Arias", totalOrders: 6, totalSpent: 3780000, lastOrderDate: "2026-04-23" },
-            { id: "m7", name: "Mirta Suárez", totalOrders: 6, totalSpent: 3600000, lastOrderDate: "2026-04-22" },
-            { id: "m8", name: "Diego Fuentes", totalOrders: 5, totalSpent: 2950000, lastOrderDate: "2026-04-21" },
-        ],
-        inactiveCustomers: [
-            { id: "im1", name: "Beatriz Leiva", phone: "+54 9 11 8832-1190" },
-            { id: "im2", name: "Nicolás Ponce", phone: "+54 9 11 9921-4478" },
-            { id: "im3", name: "Elena Bogado", phone: "+54 9 11 2234-7765" },
-            { id: "im4", name: "Tomás Bravo", phone: "+54 9 11 6677-3312" },
-            { id: "im5", name: "Celia Aguirre", phone: "+54 9 11 3345-8890" },
-        ],
-        duplicateOrders: []
-    }
-};
-
 import { getDashboardStats } from "@/actions/get-dashboard-stats";
-
-// ... existing imports ...
-
-// ... (keep Mock Data & Types) ...
-
 import { deleteOrder } from "@/actions/delete-order";
 import CycleManager from "@/components/admin/CycleManager";
 
@@ -191,102 +104,7 @@ export default function DashboardClient({ initialStats, activeCycle, latestClose
         async function fetchStats() {
             try {
                 const data = await getDashboardStats(selectedStore);
-                const selectedMock = selectedStore === "alsina" ? {
-                   totalSales: 21480750,
-                   totalOrders: 35,
-                   averageTicket: 613735,
-                   salesByCategory: [
-                     { name: "Almacén", value: 38 },
-                     { name: "Limpieza", value: 24 },
-                     { name: "Perfumería", value: 18 },
-                     { name: "Bebidas", value: 12 },
-                     { name: "Lácteos", value: 8 },
-                   ],
-                   ordersByHour: [
-                     { time: "08:00", orders: 1 },
-                     { time: "10:00", orders: 6 },
-                     { time: "12:00", orders: 11 },
-                     { time: "14:00", orders: 9 },
-                     { time: "16:00", orders: 6 },
-                     { time: "18:00", orders: 2 },
-                   ],
-                   customerRetention: [
-                     { name: "Nuevos", value: 8, fill: "#ec4899" },
-                     { name: "Recurrentes", value: 27, fill: "#2dd4bf" }
-                   ],
-                   topProducts: [
-                     { id: "p1", name: "Aceite Mezcla x 900ml", count: 28 },
-                     { id: "p2", name: "Arroz Largo Fino x 1kg", count: 25 },
-                     { id: "p3", name: "Yerba Mate 1kg", count: 22 },
-                     { id: "p4", name: "Azúcar Molida x 1kg", count: 20 },
-                     { id: "p5", name: "Fideos Spaghetti x 500g", count: 18 },
-                     { id: "p6", name: "Detergente 750ml", count: 16 },
-                     { id: "p7", name: "Leche Entera x 1L", count: 14 },
-                     { id: "p8", name: "Jabón en Polvo 800g", count: 13 },
-                     { id: "p9", name: "Sal Fina x 1kg", count: 11 },
-                     { id: "p10", name: "Puré de Tomate x 520g", count: 9 },
-                   ],
-                   stagnantProducts: [
-                     { id: "s1", name: "Mermelada Durazno x 454g", price: 2890, categoryName: "Almacén" },
-                     { id: "s2", name: "Vinagre de Manzana x 500ml", price: 1750, categoryName: "Almacén" },
-                     { id: "s3", name: "Crema Enjuague x 350ml", price: 4200, categoryName: "Perfumería" },
-                   ],
-                   newCustomers: [
-                     { id: "nc1", name: "Liliana Vega", phone: "11 4423-9871", email: "lilianavega@gmail.com" },
-                     { id: "nc2", name: "Miguel Cabrera", phone: "11 3312-5544", email: "-" },
-                     { id: "nc3", name: "Sandra Paz", phone: "11 5566-7788", email: "sandrapaz@hotmail.com" },
-                     { id: "nc4", name: "Esteban Quiroz", phone: "11 2298-4410", email: "-" },
-                   ],
-                } : {
-                   totalSales: 14320500,
-                   totalOrders: 22,
-                   averageTicket: 651022,
-                   salesByCategory: [
-                     { name: "Almacén", value: 31 },
-                     { name: "Limpieza", value: 20 },
-                     { name: "Bebidas", value: 15 },
-                     { name: "Perfumería", value: 10 },
-                     { name: "Lácteos", value: 6 },
-                   ],
-                   ordersByHour: [
-                     { time: "08:00", orders: 0 },
-                     { time: "10:00", orders: 4 },
-                     { time: "12:00", orders: 8 },
-                     { time: "14:00", orders: 6 },
-                     { time: "16:00", orders: 3 },
-                     { time: "18:00", orders: 1 },
-                   ],
-                   customerRetention: [
-                     { name: "Nuevos", value: 5, fill: "#ec4899" },
-                     { name: "Recurrentes", value: 17, fill: "#2dd4bf" }
-                   ],
-                   topProducts: [
-                     { id: "q1", name: "Aceite Girasol x 1.5L", count: 19 },
-                     { id: "q2", name: "Yerba Mate 500g", count: 17 },
-                     { id: "q3", name: "Leche Entera x 1L", count: 14 },
-                     { id: "q4", name: "Arroz Largo Fino x 1kg", count: 13 },
-                     { id: "q5", name: "Azúcar Molida x 1kg", count: 12 },
-                     { id: "q6", name: "Detergente 750ml", count: 10 },
-                     { id: "q7", name: "Sal Fina x 1kg", count: 8 },
-                   ],
-                   stagnantProducts: [
-                     { id: "qs1", name: "Aceto Balsámico x 250ml", price: 3800, categoryName: "Almacén" },
-                     { id: "qs2", name: "Shampoo Anticaspa x 400ml", price: 5100, categoryName: "Perfumería" },
-                   ],
-                   newCustomers: [
-                     { id: "qnc1", name: "Romina Álvarez", phone: "11 7789-2233", email: "romina@gmail.com" },
-                     { id: "qnc2", name: "Claudio Benítez", phone: "11 4456-8821", email: "-" },
-                   ],
-                };
-                const demoData = {
-                  ...data,
-                  ...selectedMock,
-                  topCustomers: MOCK_DATA[selectedStore].topCustomers,
-                  inactiveCustomers: MOCK_DATA[selectedStore].inactiveCustomers,
-                  duplicateOrders: MOCK_DATA[selectedStore].duplicateOrders,
-                };
-                setStats(demoData);
-                // MOCK INJECTION END
+                setStats(data);
             } catch (error) {
                 console.error("Failed to update stats:", error);
             }
@@ -301,8 +119,6 @@ export default function DashboardClient({ initialStats, activeCycle, latestClose
         setStats(initialStats);
     }, [initialStats]);
 
-
-    const mockStoreData = MOCK_DATA[selectedStore];
 
     const toggleInactiveSelection = (id: string) => {
         setSelectedInactive(prev =>
@@ -784,7 +600,7 @@ export default function DashboardClient({ initialStats, activeCycle, latestClose
                                                 onClick={toggleAllInactive}
                                                 className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
                                             >
-                                                {selectedInactive.length === mockStoreData.inactiveCustomers.length && mockStoreData.inactiveCustomers.length > 0 ? (
+                                                {selectedInactive.length === stats.inactiveCustomers.length && stats.inactiveCustomers.length > 0 ? (
                                                     <CheckSquare className="w-5 h-5 text-blue-600" />
                                                 ) : (
                                                     <Square className="w-5 h-5" />
